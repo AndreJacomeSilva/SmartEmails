@@ -80,13 +80,6 @@ curl -X POST "http://localhost:8000/api/v1/email/compose" \
 
 ## 📚 Documentation
 
-### Quick Links
-
-- **🌐 Live API**: [smartemails-api.azurewebsites.net](https://smartemails-api.azurewebsites.net)
-- **📖 Interactive Docs**: [smartemails-api.azurewebsites.net/docs](https://smartemails-api.azurewebsites.net/docs)
-- **📋 OpenAPI Spec**: [smartemails-api.azurewebsites.net/openapi.json](https://smartemails-api.azurewebsites.net/openapi.json)
-- **🏥 Health Check**: [smartemails-api.azurewebsites.net/health](https://smartemails-api.azurewebsites.net/health)
-
 ### Comprehensive Documentation
 
 - **📚 [Complete Documentation](docs/README.md)** - Architecture, features, and deployment
