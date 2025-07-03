@@ -1,0 +1,25 @@
+# FastAPI and ASGI server
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+
+# Data validation and settings
+pydantic==2.6.1
+pydantic-settings==2.0.0
+
+# OpenAI integration
+openai>=1.68.2
+
+# HTTP client
+httpx==0.25.2
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Development dependencies (optional)
+pytest==7.4.4
+
+# New dependencies for OpenAI Responses API implementation
+tenacity==8.2.3
+msgraph-sdk==1.2.0
+azure-identity==1.15.0
+python-multipart==0.0.6

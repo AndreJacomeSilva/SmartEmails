@@ -1,0 +1,449 @@
+openapi: 3.1.0
+info:
+  title: SmartEmails API
+  description: |
+    The SmartEmails API provides intelligent email response generation using OpenAI's latest Responses API.
+    This service replicates the functionality of the SmartEmails Power Automate Flow as a high-performance
+    FastAPI endpoint with advanced features including:
+    
+    - OpenAI Responses API integration with reasoning support
+    - Microsoft Teams notifications for alerts and errors
+    - Document analysis for email attachments
+    - Function calling capabilities for enhanced AI interactions
+    - Robust error handling with exponential backoff
+    - Power Automate compatible input/output formats
+    
+    ## Architecture
+    
+    The API follows a modular architecture with clear separation of concerns:
+    - **API Layer**: FastAPI endpoints with Pydantic validation
+    - **Service Layer**: Business logic for AI, Teams, and attachment processing
+    - **Configuration**: Environment-based configuration management
+    - **Error Handling**: Comprehensive error handling with notifications
+    
+    ## Authentication
+    
+    The API uses API key authentication for OpenAI services and OAuth2 for Microsoft Teams integration.
+    All credentials are managed through environment variables for security.
+    
+    ## Rate Limiting
+    
+    The API implements intelligent retry logic with exponential backoff to handle rate limits
+    and temporary service unavailability gracefully.
+  version: 1.0.0
+  contact:
+    name: SmartEmails API Support
+    url: https://github.com/AndreJacomeSilva/SmartEmails
+    email: support@goldenergy.pt
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://smartemails-api.azurewebsites.net
+    description: Production server
+
+paths:
+  /api/v1/email/compose:
+    post:
+      summary: Compose Email Response
+      description: |
+        Processes an email and generates an AI-powered response using OpenAI's Responses API.
+        This endpoint replicates the complete Power Automate SmartEmails flow functionality,
+        including function calling, document analysis, and Teams notifications.
+      operationId: composeEmailResponse
+      tags:
+        - Email AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+            examples:
+              simple_inquiry:
+                summary: Simple customer inquiry
+                value:
+                  domain: goldenergy.pt
+                  from: joao.silva@example.com
+                  to: ["apoio@goldenergy.pt"]
+                  subject: "Informações sobre tarifas"
+                  body: "Gostaria de receber informações sobre as vossas tarifas de energia."
+                  bodyFormat: text
+                  originalMailbox: apoio@goldenergy.pt
+                  emailId: msg_001
+              billing_question:
+                summary: Billing question with RE prefix
+                value:
+                  domain: goldenergy.pt
+                  from: maria.santos@example.com
+                  to: ["faturacao@goldenergy.pt"]
+                  subject: "RE: Dúvida sobre fatura mensal"
+                  body: "Tenho uma dúvida sobre a minha fatura do mês passado."
+                  bodyFormat: text
+                  originalMailbox: faturacao@goldenergy.pt
+                  emailId: msg_002
+              with_attachment:
+                summary: Email with attachment for analysis
+                value:
+                  domain: goldenergy.pt
+                  from: ana.ferreira@example.com
+                  to: ["contratos@goldenergy.pt"]
+                  subject: "Análise do meu contrato"
+                  body: "Envio em anexo o meu contrato para análise."
+                  bodyFormat: text
+                  attachments:
+                    - id: att_001
+                      name: contrato.pdf
+                      contentType: application/pdf
+                      size: 1024
+                  originalMailbox: contratos@goldenergy.pt
+                  emailId: msg_003
+      responses:
+        '200':
+          description: Email response generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResponse'
+              examples:
+                successful_response:
+                  summary: Typical successful response
+                  value:
+                    subjectPrefix: "RE:"
+                    body: "<p>Estimado João Silva,</p><p>Obrigado pelo seu interesse nas nossas tarifas de energia...</p>"
+                    confidence: 85
+                    language: "pt-PT"
+                low_confidence_response:
+                  summary: Low confidence response
+                  value:
+                    subjectPrefix: ""
+                    body: "<p>Obrigado pelo seu contacto. Para melhor assistência, recomendamos que contacte diretamente...</p>"
+                    confidence: 25
+                    language: "pt-PT"
+        '400':
+          description: Bad request - invalid input format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Invalid email format in 'from' field"
+        '422':
+          description: Validation error - request doesn't match expected schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                openai_error:
+                  summary: OpenAI API error
+                  value:
+                    detail: "OpenAI API key not configured. Please check your .env file."
+                processing_error:
+                  summary: Processing error
+                  value:
+                    detail: "Failed to get response from AI after maximum iterations"
+
+  /health:
+    get:
+      summary: Health Check
+      description: Returns the current health status of the API service and its dependencies
+      operationId: getHealthStatus
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthy:
+                  summary: Service is healthy
+                  value:
+                    status: healthy
+                    api_key_configured: true
+                    default_model: "o4-mini"
+                    timestamp: "2025-07-02T12:00:00Z"
+                unhealthy:
+                  summary: Service has issues
+                  value:
+                    status: unhealthy
+                    api_key_configured: false
+                    default_model: "gpt-4o-mini"
+                    timestamp: "2025-07-02T12:00:00Z"
+
+  /generate_reply:
+    post:
+      summary: Generate Reply (Deprecated)
+      description: |
+        **DEPRECATED**: This endpoint is deprecated and will be removed in a future version.
+        Please use `/api/v1/email/compose` instead for new implementations.
+      operationId: generateReply
+      deprecated: true
+      tags:
+        - Legacy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyEmailInput'
+      responses:
+        '200':
+          description: Legacy response format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResponse'
+
+components:
+  schemas:
+    EmailRequest:
+      type: object
+      required:
+        - domain
+        - from
+        - to
+        - subject
+        - body
+      properties:
+        domain:
+          type: string
+          description: The domain of the organization
+          example: goldenergy.pt
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}$'
+        from:
+          type: string
+          format: email
+          description: Sender's email address
+          example: customer@example.com
+        to:
+          type: array
+          items:
+            type: string
+            format: email
+          description: Recipient email addresses
+          example: ["support@goldenergy.pt"]
+          minItems: 1
+        cc:
+          type: array
+          items:
+            type: string
+            format: email
+          description: CC email addresses
+          default: []
+        subject:
+          type: string
+          description: Email subject line
+          example: "Pedido de informação sobre tarifas"
+          maxLength: 255
+        body:
+          type: string
+          description: Email body content
+          example: "Gostaria de receber informações sobre as vossas tarifas de energia elétrica para casa."
+          maxLength: 10000
+        bodyFormat:
+          type: string
+          enum: [html, text]
+          default: html
+          description: Format of the email body
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailAttachment'
+          description: Email attachments
+          default: []
+        originalMailbox:
+          type: string
+          format: email
+          description: Original mailbox receiving the email
+          example: support@goldenergy.pt
+        emailId:
+          type: string
+          description: Unique identifier for the email
+          example: msg_123456789
+          maxLength: 100
+
+    EmailAttachment:
+      type: object
+      required:
+        - id
+        - name
+        - contentType
+        - size
+      properties:
+        id:
+          type: string
+          description: Unique attachment identifier
+          example: att_123
+          maxLength: 100
+        name:
+          type: string
+          description: Attachment filename
+          example: document.pdf
+          maxLength: 255
+        contentType:
+          type: string
+          description: MIME type of the attachment
+          example: application/pdf
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*$'
+        size:
+          type: integer
+          description: Size of attachment in bytes
+          example: 1024
+          minimum: 0
+          maximum: 104857600  # 100MB
+        contentBytes:
+          type: string
+          description: Base64 encoded attachment content
+          nullable: true
+          format: byte
+
+    EmailResponse:
+      type: object
+      required:
+        - body
+        - confidence
+        - language
+      properties:
+        subjectPrefix:
+          type: string
+          description: Prefix to add to the original subject
+          example: "RE:"
+          default: ""
+          maxLength: 10
+        body:
+          type: string
+          description: Generated email response body in HTML format
+          example: "<p>Estimado João Silva,</p><p>Obrigado pelo seu interesse nas nossas tarifas de energia...</p>"
+        confidence:
+          type: integer
+          description: Confidence level of the AI response (0-100)
+          example: 85
+          minimum: 0
+          maximum: 100
+        language:
+          type: string
+          description: Language code of the response (ISO 639-1)
+          example: "pt-PT"
+          pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - api_key_configured
+        - default_model
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+          description: Overall service status
+        api_key_configured:
+          type: boolean
+          description: Whether OpenAI API key is configured
+        default_model:
+          type: string
+          description: Default AI model being used
+          example: "o4-mini"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the health check
+          example: "2025-07-02T12:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error message describing what went wrong
+          example: "OpenAI API key not configured"
+
+    ValidationErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            required:
+              - loc
+              - msg
+              - type
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                    - type: string
+                    - type: integer
+                description: Location of the error in the request
+                example: ["body", "from"]
+              msg:
+                type: string
+                description: Error message
+                example: "field required"
+              type:
+                type: string
+                description: Error type
+                example: "value_error.missing"
+
+    LegacyEmailInput:
+      type: object
+      description: Legacy email input format (deprecated)
+      properties:
+        domain:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        isHtml:
+          type: boolean
+        # ... other legacy fields
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (not currently implemented)
+    
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token authentication (not currently implemented)
+
+tags:
+  - name: Email AI
+    description: Email composition and AI processing endpoints
+  - name: Health
+    description: Service health and monitoring endpoints
+  - name: Legacy
+    description: Deprecated endpoints maintained for backward compatibility
+
+externalDocs:
+  description: Full API Documentation
+  url: https://github.com/AndreJacomeSilva/SmartEmails/blob/main/docs/README.md

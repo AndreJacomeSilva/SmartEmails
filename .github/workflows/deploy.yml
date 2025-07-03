@@ -1,0 +1,318 @@
+name: 🚀 Deploy SmartEmails API
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: 🔍 Validate & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: 🔧 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio httpx
+        
+    - name: 🔍 Lint with flake8
+      run: |
+        pip install flake8
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: 📋 Validate OpenAPI spec
+      run: |
+        pip install openapi-spec-validator
+        openapi-spec-validator openapi.yaml
+        
+    - name: 🧪 Run tests
+      run: |
+        python -m pytest test_email_ai.py -v
+        
+    - name: 🏥 Health check
+      run: |
+        # Start the server in background
+        python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+        # Test health endpoint
+        curl -f http://localhost:8000/health || exit 1
+            validate_spec(spec_dict)
+            print('✅ OpenAPI specification is valid')
+        except Exception as e:
+            print(f'❌ OpenAPI validation failed: {e}')
+            exit(1)
+        "
+        
+    - name: Lint Python code
+      run: |
+        pip install flake8
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+        
+    - name: Test API endpoints (mock)
+      run: |
+        # Create a basic test to ensure imports work
+        python -c "
+        import sys
+        sys.path.append('.')
+        try:
+            from src.main import app
+            from src.api.email_ai_endpoint import router
+            from src.services.openai_service import OpenAIService
+            print('✅ All imports successful')
+        except Exception as e:
+            print(f'❌ Import failed: {e}')
+            exit(1)
+        "
+
+  build-and-deploy-azure:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    name: Deploy to Azure App Service
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Create requirements for deployment
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip freeze > requirements-frozen.txt
+        
+    - name: Prepare deployment files
+      run: |
+        # Create startup script for Azure App Service
+        cat > startup.sh << 'EOF'
+        #!/bin/bash
+        echo "Starting SmartEmails API..."
+        python -m uvicorn src.main:app --host 0.0.0.0 --port 8000
+        EOF
+        chmod +x startup.sh
+        
+        # Create web.config for Azure App Service (if needed)
+        cat > web.config << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <system.webServer>
+            <handlers>
+              <add name="PythonHandler" path="*" verb="*" modules="httpPlatformHandler" resourceType="Unspecified"/>
+            </handlers>
+            <httpPlatform processPath="python" arguments="-m uvicorn src.main:app --host 0.0.0.0 --port %HTTP_PLATFORM_PORT%" stdoutLogEnabled="true" stdoutLogFile=".\logs\python.log" startupTimeLimit="60" requestTimeout="00:04:00">
+              <environmentVariables>
+                <environmentVariable name="PYTHONPATH" value="." />
+              </environmentVariables>
+            </httpPlatform>
+          </system.webServer>
+        </configuration>
+        EOF
+        
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      if: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      with:
+        app-name: 'smartemails-api'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: .
+
+  build-docker:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    name: Build and Push Docker Image
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Container Registry
+      if: ${{ secrets.DOCKER_REGISTRY_URL && secrets.DOCKER_REGISTRY_USERNAME && secrets.DOCKER_REGISTRY_PASSWORD }}
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.DOCKER_REGISTRY_URL }}
+        username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+        
+    - name: Create Dockerfile
+      run: |
+        cat > Dockerfile << 'EOF'
+        FROM python:3.9-slim
+        
+        WORKDIR /app
+        
+        # Install system dependencies
+        RUN apt-get update && apt-get install -y \
+            gcc \
+            curl \
+            && rm -rf /var/lib/apt/lists/*
+        
+        # Copy requirements and install Python dependencies
+        COPY requirements.txt .
+        RUN pip install --no-cache-dir -r requirements.txt
+        
+        # Copy application code
+        COPY . .
+        
+        # Create non-root user
+        RUN useradd --create-home --shell /bin/bash app \
+            && chown -R app:app /app
+        USER app
+        
+        # Expose port
+        EXPOSE 8000
+        
+        # Health check
+        HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+            CMD curl -f http://localhost:8000/health || exit 1
+        
+        # Start application
+        CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+        EOF
+        
+    - name: Build and push Docker image
+      if: ${{ secrets.DOCKER_REGISTRY_URL }}
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_REGISTRY_URL }}/smartemails-api:latest
+          ${{ secrets.DOCKER_REGISTRY_URL }}/smartemails-api:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-docs:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    name: Deploy Documentation
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Install documentation dependencies
+      run: |
+        npm install -g @redocly/cli
+        
+    - name: Generate API documentation
+      run: |
+        # Create docs directory if it doesn't exist
+        mkdir -p docs/generated
+        
+        # Generate HTML documentation from OpenAPI spec
+        redocly build-docs openapi.yaml --output docs/generated/api-docs.html
+        
+        # Create index.html that redirects to the API docs
+        cat > docs/generated/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SmartEmails API Documentation</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .container { max-width: 800px; margin: 0 auto; }
+                .header { text-align: center; margin-bottom: 40px; }
+                .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+                .link-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; }
+                .link-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+                .link-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+                .link-desc { color: #666; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🚀 SmartEmails API Documentation</h1>
+                    <p>Advanced email response generation with OpenAI integration</p>
+                </div>
+                <div class="links">
+                    <a href="api-docs.html" class="link-card">
+                        <div class="link-title">📚 API Reference</div>
+                        <div class="link-desc">Complete OpenAPI specification with interactive examples</div>
+                    </a>
+                    <a href="https://github.com/AndreJacomeSilva/SmartEmails" class="link-card">
+                        <div class="link-title">💻 GitHub Repository</div>
+                        <div class="link-desc">Source code, issues, and contributions</div>
+                    </a>
+                    <a href="../README.md" class="link-card">
+                        <div class="link-title">📖 User Guide</div>
+                        <div class="link-desc">Installation, configuration, and usage guide</div>
+                    </a>
+                    <a href="../api-reference.md" class="link-card">
+                        <div class="link-title">🔧 Integration Guide</div>
+                        <div class="link-desc">SDKs and integration examples</div>
+                    </a>
+                </div>
+            </div>
+        </body>
+        </html>
+        EOF
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        cname: smartemails-api.github.io
+
+  notify:
+    needs: [test, build-and-deploy-azure, build-docker, deploy-docs]
+    runs-on: ubuntu-latest
+    if: always() && github.ref == 'refs/heads/main'
+    name: Notify Deployment Status
+    
+    steps:
+    - name: Notify success
+      if: ${{ needs.test.result == 'success' && needs.build-and-deploy-azure.result == 'success' }}
+      run: |
+        echo "✅ Deployment successful!"
+        echo "🌐 API deployed to Azure App Service"
+        echo "🐳 Docker image built and pushed"
+        echo "📚 Documentation deployed to GitHub Pages"
+        
+    - name: Notify failure
+      if: ${{ needs.test.result == 'failure' || needs.build-and-deploy-azure.result == 'failure' }}
+      run: |
+        echo "❌ Deployment failed!"
+        echo "Please check the logs for more details."
+        exit 1

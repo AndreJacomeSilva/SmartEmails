@@ -1,0 +1,3292 @@
+{
+    "name": "405a525f-853a-14a1-e6dc-3b6c141406b4",
+    "id": "/providers/Microsoft.ProcessSimple/environments/Default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9/flows/405a525f-853a-14a1-e6dc-3b6c141406b4",
+    "type": "Microsoft.ProcessSimple/environments/flows",
+    "properties": {
+        "apiId": "/providers/Microsoft.PowerApps/apis/shared_logicflows",
+        "displayName": "0.Geral: SmartCompose API using OpenAI v1",
+        "userType": "Owner",
+        "definition": {
+            "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "$connections": {
+                    "defaultValue": {},
+                    "type": "Object"
+                },
+                "$authentication": {
+                    "defaultValue": {},
+                    "type": "SecureObject"
+                }
+            },
+            "triggers": {
+                "manual": {
+                    "metadata": {
+                        "operationMetadataId": "880616be-e4dd-4652-ab37-a1e04554a4da"
+                    },
+                    "type": "Request",
+                    "kind": "Http",
+                    "inputs": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "domain": {
+                                    "type": "string",
+                                    "description": "Nome do projeto ou produto.",
+                                    "example": "Mobilidade elétrica"
+                                },
+                                "projectDescription": {
+                                    "type": "string",
+                                    "description": "Descrição do projeto e área de negócio.",
+                                    "example": "todos os temas relacionados com mobilidade elétrica"
+                                },
+                                "language": {
+                                    "type": "string",
+                                    "description": "Código do idioma e cultura a ser usada na escrita do email.",
+                                    "example": "pt-PT"
+                                },
+                                "from": {
+                                    "type": "string",
+                                    "description": "Email do remetente."
+                                },
+                                "to": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "description": "Lista de destinatários principais do email, separados por ,."
+                                },
+                                "cc": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "description": "Lista de destinatários em cópia (CC), separados por virgula"
+                                },
+                                "subject": {
+                                    "type": "string",
+                                    "description": "Assunto do email.",
+                                    "example": "Pedido de informação sobre excedentes"
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Conteúdo do email, em texto simples ou HTML.",
+                                    "example": "<p>Boa tarde, queremos saber os valores de excedentes do mês passado.</p>"
+                                },
+                                "isHtml": {
+                                    "type": "boolean"
+                                },
+                                "attachments": {
+                                    "type": "array",
+                                    "description": "Lista de anexos do email.",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "Nome do ficheiro.",
+                                                "example": "fatura_mars2025.pdf"
+                                            },
+                                            "contentType": {
+                                                "type": "string",
+                                                "description": "MIME type do anexo.",
+                                                "example": "application/pdf"
+                                            },
+                                            "url": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "description": "URL pre-assinada para download do anexo.",
+                                                "example": "https://storage.azure.com/.../fatura_mars2025.pdf?sv=..."
+                                            },
+                                            "lastModifiedDateTime": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "sizeInKB": {
+                                                "type": "integer"
+                                            },
+                                            "isInline": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "contentType",
+                                            "sizeInKB"
+                                        ]
+                                    }
+                                },
+                                "knowledgeBaseVectorStore": {
+                                    "type": "string",
+                                    "description": "Id do vector store onde estão os ficheiros de conhecimento."
+                                },
+                                "functionsPath": {
+                                    "type": "string",
+                                    "description": "URL para o ficheiro JSON que descreve funções custom e tool-calling.",
+                                    "example": "https://storage.azure.com/funcoes-extra.json"
+                                },
+                                "apiUrl": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "Endpoint HTTP do Power Automate que expõe as funções definidas.",
+                                    "example": "https://prod-01.westeurope.logic.azure.com/workflows/..."
+                                },
+                                "replySenderName": {
+                                    "type": "string",
+                                    "description": "Nome a colocar na assinatura do email.",
+                                    "example": "Equipa do NewEnergy"
+                                },
+                                "persona": {
+                                    "type": "string",
+                                    "description": "Instruções sobre o tom e tipo de escrita na composição do email.",
+                                    "example": "Deves tratar sempre o cliente por você, sem usar palavra você, e podes usar emojies (sem abusar)."
+                                },
+                                "AiModel": {
+                                    "type": "string",
+                                    "description": "Modelo de AI a usar",
+                                    "example": "o4-mini"
+                                },
+                                "ReasoningLevel": {
+                                    "type": "string",
+                                    "description": "Nível de raciocinio para os modelos de reasoning",
+                                    "example": "high"
+                                },
+                                "receivedDateTime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Timestamp ISO 8601 de quando o email foi recebido.",
+                                    "example": "2025-04-23T14:35:00Z"
+                                },
+                                "importance": {
+                                    "type": "string",
+                                    "enum": [
+                                        "low",
+                                        "normal",
+                                        "high"
+                                    ],
+                                    "description": "Nível de importância do email.",
+                                    "example": "normal"
+                                }
+                            },
+                            "required": [
+                                "originalMailbox",
+                                "from",
+                                "subject",
+                                "body",
+                                "functionsPath",
+                                "apiUrl"
+                            ]
+                        },
+                        "triggerAuthenticationType": "All"
+                    }
+                }
+            },
+            "actions": {
+                "Initialize_System_Messages": {
+                    "runAfter": {
+                        "Initialize_DefaultPersona": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "9af46c0e-821e-470e-85f7-1d4c7bf01318"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "SystemMessages",
+                                "type": "array",
+                                "value": [
+                                    {
+                                        "role": "system",
+                                        "content": "@{coalesce(outputs('Configurations')['persona'],variables('DefaultPersona'))}\n"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "Initialize_Messages": {
+                    "runAfter": {
+                        "Email_Object": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "e6e03070-2525-4e65-bd78-93f696012f0f"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "Messages",
+                                "type": "array",
+                                "value": [
+                                    {
+                                        "role": "user",
+                                        "content": "Analisa e processa o seguinte email:\n @{outputs('Email_Object')}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "Configurations": {
+                    "runAfter": {},
+                    "metadata": {
+                        "operationMetadataId": "226968b3-1a23-469d-bc3b-3b040c61a133"
+                    },
+                    "type": "Compose",
+                    "inputs": {
+                        "domain": "@{triggerBody()['domain']}",
+                        "projectDescription": "@{triggerBody()?['projectDescription']}",
+                        "AiModel": "@if(empty(coalesce(triggerBody()?['AiModel'],'')),'o4-mini',triggerBody()['AiModel'])",
+                        "ReasoningLevel": "@if(startsWith(if(empty(coalesce(triggerBody()?['AiModel'],'')),'o4-mini',triggerBody()?['AiModel']),'o'),if(greater(length(coalesce(triggerBody()?['ReasoningLevel'],'')),2),triggerBody()?['ReasoningLevel'],'medium'),null)",
+                        "knowledgeBaseVectorStore": "@coalesce(triggerBody()?['knowledgeBaseVectorStore'],'vs_68068c8784d081919dff3ac956e25d3e')",
+                        "functionsPath": "@{triggerBody()['functionsPath']}",
+                        "apiUrl": "@{triggerBody()['apiUrl']}",
+                        "language": "@{triggerBody()['language']}",
+                        "persona": "@{triggerBody()?['persona']}",
+                        "replySenderName": "@{triggerBody()?['replySenderName']}"
+                    }
+                },
+                "Load_Functions": {
+                    "runAfter": {
+                        "Configurations": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "7a4b403a-ca07-46db-93a6-4d41137d0be8"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                        "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                            "connectionName": "shared_sharepointonline_2",
+                            "operationId": "GetFileContentByPath"
+                        },
+                        "parameters": {
+                            "dataset": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                            "path": "@outputs('Configurations')['functionsPath']",
+                            "inferContentType": false
+                        },
+                        "authentication": "@parameters('$authentication')"
+                    }
+                },
+                "Do_until": {
+                    "actions": {
+                        "OpenAI-Response": {
+                            "runAfter": {},
+                            "limit": {
+                                "timeout": "PT300S"
+                            },
+                            "metadata": {
+                                "operationMetadataId": "7876eb6c-2990-49c3-bad0-f43732fdd598"
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "method": "POST",
+                                "uri": "https://api.openai.com/v1/responses",
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "Authorization": "Bearer {{OPEN_AI_KEY}}",
+                                    "Accept‑Encoding": "gzip"
+                                },
+                                "body": {
+                                    "model": "@{outputs('Configurations')['AiModel']}",
+                                    "max_output_tokens": 16384,
+                                    "temperature": "@if(startsWith(outputs('Configurations')['AiModel'],'o'),null,0)",
+                                    "tool_choice": "auto",
+                                    "service_tier": "@{if(startsWith(outputs('Configurations')['AiModel'],'o'),'flex','auto')}",
+                                    "stream": false,
+                                    "reasoning": {
+                                        "effort": "@outputs('Configurations')['reasoningLevel']"
+                                    },
+                                    "previous_response_id": "@if(empty(variables('PreviousResponseId')), null, variables('PreviousResponseId'))",
+                                    "parallel_tool_calls": true,
+                                    "instructions": "@{variables('Instructions')}",
+                                    "input": "@union(union(variables('SystemMessages'), variables('Messages')), variables('FunctionResponse'))",
+                                    "tools": "@variables('Functions')",
+                                    "text": {
+                                        "format": "@outputs('OutputFormat')"
+                                    }
+                                },
+                                "retryPolicy": {
+                                    "type": "exponential",
+                                    "count": 5,
+                                    "interval": "PT5S",
+                                    "minimumInterval": "PT5S",
+                                    "maximumInterval": "PT60S"
+                                }
+                            }
+                        },
+                        "ParseOpenAI-Response": {
+                            "runAfter": {
+                                "OpenAI-Response": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "7bfc0b50-b791-4b0d-86c4-3fb1d1bef415"
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@body('OpenAI-Response')",
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "object": {
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "type": "integer"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "model": {
+                                            "type": "string"
+                                        },
+                                        "output": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "content": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string"
+                                                                },
+                                                                "annotations": {
+                                                                    "type": "array"
+                                                                },
+                                                                "text": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "role": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "type"
+                                                ]
+                                            }
+                                        },
+                                        "parallel_tool_calls": {
+                                            "type": "boolean"
+                                        },
+                                        "previous_response_id": {},
+                                        "reasoning": {
+                                            "type": "object",
+                                            "properties": {
+                                                "effort": {},
+                                                "summary": {}
+                                            }
+                                        },
+                                        "service_tier": {
+                                            "type": "string"
+                                        },
+                                        "store": {
+                                            "type": "boolean"
+                                        },
+                                        "temperature": {
+                                            "type": "integer"
+                                        },
+                                        "text": {
+                                            "type": "object",
+                                            "properties": {
+                                                "format": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "tool_choice": {
+                                            "type": "string"
+                                        },
+                                        "tools": {
+                                            "type": "array"
+                                        },
+                                        "top_p": {
+                                            "type": "integer"
+                                        },
+                                        "truncation": {
+                                            "type": "string"
+                                        },
+                                        "user": {},
+                                        "metadata": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "ToolsCalled": {
+                            "runAfter": {
+                                "Set_PreviousResponseId": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "fac98abb-6c42-40c8-a0a9-1776f31b9ac8"
+                            },
+                            "type": "Query",
+                            "inputs": {
+                                "from": "@body('ParseOpenAI-Response')['output']",
+                                "where": "@and(equals(item()['type'], 'function_call'),equals(item()?['status'], 'completed'))"
+                            }
+                        },
+                        "For_Each_Tool_Called": {
+                            "foreach": "@coalesce(body('ToolsCalled'),json('[]'))",
+                            "actions": {
+                                "Switch_Function_Call": {
+                                    "runAfter": {
+                                        "Append_FunctionCall_to_FunctionResponse": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "cases": {
+                                        "content_not_available": {
+                                            "case": "content_not_available",
+                                            "actions": {
+                                                "Append_content_not_available": {
+                                                    "runAfter": {
+                                                        "content_not_available_Response": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "3f33b751-49f9-497e-a47c-1d0331886575"
+                                                    },
+                                                    "type": "AppendToArrayVariable",
+                                                    "inputs": {
+                                                        "name": "FunctionResponse",
+                                                        "value": {
+                                                            "type": "function_call_output",
+                                                            "call_id": "@{items('For_Each_Tool_Called')['call_id']}",
+                                                            "output": "@{outputs('content_not_available_Response')}"
+                                                        }
+                                                    }
+                                                },
+                                                "content_not_available_Query": {
+                                                    "runAfter": {},
+                                                    "metadata": {
+                                                        "operationMetadataId": "6879e842-34ab-4009-83c3-bedd4e20c3d1"
+                                                    },
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                        "content": "@items('For_Each_Tool_Called')['arguments']",
+                                                        "schema": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Subject": {
+                                                                    "type": "string",
+                                                                    "description": "O assunto sobre o qual falta informação"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Subject"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "Post_message_in_a_chat_or_channel": {
+                                                    "runAfter": {
+                                                        "Report_Content_Not_Available": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "ebdcddfd-d0a3-4fec-b886-3985ae8f589a"
+                                                    },
+                                                    "type": "OpenApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                                                            "connectionName": "shared_teams",
+                                                            "operationId": "PostMessageToConversation"
+                                                        },
+                                                        "parameters": {
+                                                            "poster": "Flow bot",
+                                                            "location": "Group chat",
+                                                            "body/recipient": "19:39df9a214acb47dab3060d2a405c241d@thread.v2",
+                                                            "body/messageBody": "<p>❓ Falta conteúdo para responder de forma correta a um email:<br>\n<strong></strong><strong>@{body('content_not_available_Query')['Subject']}</strong><strong></strong><br>\nCaso a pergunta seja pertinente, adicionar este conteúdo no Knowledge Base.</p>"
+                                                        },
+                                                        "authentication": "@parameters('$authentication')"
+                                                    }
+                                                },
+                                                "content_not_available_Response": {
+                                                    "runAfter": {
+                                                        "Post_message_in_a_chat_or_channel": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "bbeb4e5f-983c-4fb2-ad77-688ca18f083c"
+                                                    },
+                                                    "type": "Compose",
+                                                    "inputs": {
+                                                        "success": true,
+                                                        "description": "A equipa do NewEnergy foi avisada desta questão, sobre a qual eu (o assistente) não consegui responder."
+                                                    }
+                                                },
+                                                "Report_Content_Not_Available": {
+                                                    "runAfter": {
+                                                        "content_not_available_Query": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "bbd480b4-34b7-4f9a-8f0c-998873576685"
+                                                    },
+                                                    "type": "OpenApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                                            "connectionName": "shared_sharepointonline_2",
+                                                            "operationId": "PostItem"
+                                                        },
+                                                        "parameters": {
+                                                            "dataset": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                                                            "table": "ecdbef88-d8ed-466e-ae2f-973431f58f4f",
+                                                            "item/Title": "@{formatDateTime(utcNow(), 'yy-MM-dd')} - @{triggerBody()?['AgentName']}",
+                                                            "item/Type": "Missing Content",
+                                                            "item/AgentName": "@triggerBody()?['AgentName']",
+                                                            "item/Date": "@convertTimeZone(utcNow(), 'UTC', 'GMT Standard Time')",
+                                                            "item/Domain": "@outputs('Configurations')['domain']",
+                                                            "item/Evaluation": 1,
+                                                            "item/Comments": "Falta conteúdo sobre: @{body('content_not_available_Query')['Subject']}",
+                                                            "item/AgentQuestions": "@triggerBody()['subject']"
+                                                        },
+                                                        "authentication": "@parameters('$authentication')"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "analyze_email_attachment": {
+                                            "case": "analyze_email_attachment",
+                                            "actions": {
+                                                "Parse_Agent_analyze_document": {
+                                                    "runAfter": {},
+                                                    "metadata": {
+                                                        "operationMetadataId": "f0ecfacb-e8fa-4883-9439-dd0d373a048a"
+                                                    },
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                        "content": "@items('For_Each_Tool_Called')['arguments']",
+                                                        "schema": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "emailId": {
+                                                                    "type": "string",
+                                                                    "description": "ID do email que contêm o anexo."
+                                                                },
+                                                                "attachmentFileName": {
+                                                                    "type": "string",
+                                                                    "description": "Nome do ficheiro, incluindo a extensão."
+                                                                },
+                                                                "attachmentId": {
+                                                                    "type": "string",
+                                                                    "description": "ID do anexo a ser analisado."
+                                                                },
+                                                                "prompt": {
+                                                                    "type": "string",
+                                                                    "description": "Pergunta (prompt) a ser usado pela AI para extrair a informação necessária do documento."
+                                                                },
+                                                                "systemPrompt": {
+                                                                    "type": "string",
+                                                                    "description": "Prompt com o contexto necessário para a IA poder analisar o documento."
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "emailId",
+                                                                "attachmentId",
+                                                                "prompt"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "Agent_Feedback_Result": {
+                                                    "runAfter": {
+                                                        "CompleteMessagesAnalyzedDocument": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "67f6409e-3a3b-4b81-82b2-2d5b22d0df99"
+                                                    },
+                                                    "type": "Compose",
+                                                    "inputs": {
+                                                        "success": true,
+                                                        "description": "@{last(body('CompleteMessagesAnalyzedDocument'))?['content']?[0]?['text']}"
+                                                    }
+                                                },
+                                                "Append_analyze_document": {
+                                                    "runAfter": {
+                                                        "Agent_Feedback_Result": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "f66a94bb-aebe-4578-b3d4-f9aabcfaf803"
+                                                    },
+                                                    "type": "AppendToArrayVariable",
+                                                    "inputs": {
+                                                        "name": "FunctionResponse",
+                                                        "value": {
+                                                            "type": "function_call_output",
+                                                            "call_id": "@{items('For_Each_Tool_Called')['call_id']}",
+                                                            "output": "@{outputs('Agent_Feedback_Result')}"
+                                                        }
+                                                    }
+                                                },
+                                                "Get_Attachment_Content": {
+                                                    "runAfter": {
+                                                        "Parse_Agent_analyze_document": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "0b9eaa6f-f266-4f8e-9cfd-4a1de693f60c"
+                                                    },
+                                                    "type": "Http",
+                                                    "inputs": {
+                                                        "method": "POST",
+                                                        "uri": "@{outputs('Configurations')['getAttachmentApi']}",
+                                                        "headers": {
+                                                            "content-type": "application/json"
+                                                        },
+                                                        "body": {
+                                                            "emailId": "@{body('Parse_Agent_analyze_document')['emailId']}",
+                                                            "attachmentId": "@{body('Parse_Agent_analyze_document')['attachmentId']}"
+                                                        }
+                                                    }
+                                                },
+                                                "Upload_File": {
+                                                    "runAfter": {
+                                                        "Get_Attachment_Content": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "b6a720b8-5515-4537-829d-e8ab7f07f42f"
+                                                    },
+                                                    "type": "Http",
+                                                    "inputs": {
+                                                        "method": "POST",
+                                                        "uri": "https://api.openai.com/v1/files",
+                                                        "headers": {
+                                                            "Authorization": "Bearer {{OPEN_AI_KEY}}",
+                                                            "Content-Type": "multipart/form-data; charset=UTF-8; boundary=--------------------------257168502688002136424492"
+                                                        },
+                                                        "body": {
+                                                            "$content-type": "multipart/form-data; charset=UTF-8; boundary=--------------------------257168502688002136424492",
+                                                            "$multipart": [
+                                                                {
+                                                                    "headers": {
+                                                                        "Content-Disposition": "form-data; name=\"file\"; filename=\"@{body('Get_Attachment_Content')['name']}\"",
+                                                                        "Content-Type": "@{body('Get_Attachment_Content')['contentType']}",
+                                                                        "Content-Length": "@{body('Get_Attachment_Content')['size']}"
+                                                                    },
+                                                                    "body": "@base64ToBinary(body('Get_Attachment_Content')['contentBytes'])"
+                                                                },
+                                                                {
+                                                                    "headers": {
+                                                                        "Content-Disposition": "form-data; name=\"purpose\"",
+                                                                        "Content-Length": "9"
+                                                                    },
+                                                                    "body": {
+                                                                        "$content-type": "application/octet-stream",
+                                                                        "$content": "dXNlcl9kYXRh"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "UploadFileResponse": {
+                                                    "runAfter": {
+                                                        "Upload_File": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "7a2b07bf-c625-4f67-8267-d59301c50e53"
+                                                    },
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                        "content": "@body('Upload_File')",
+                                                        "schema": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "object": {
+                                                                    "type": "string"
+                                                                },
+                                                                "id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "purpose": {
+                                                                    "type": "string"
+                                                                },
+                                                                "filename": {
+                                                                    "type": "string"
+                                                                },
+                                                                "bytes": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "expires_at": {},
+                                                                "status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "status_details": {}
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Analyze_Document": {
+                                                    "runAfter": {
+                                                        "UploadFileResponse": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "3372be68-2b93-4cbc-8bb3-0e7bfd20d555"
+                                                    },
+                                                    "type": "Http",
+                                                    "inputs": {
+                                                        "method": "POST",
+                                                        "uri": "https://api.openai.com/v1/responses",
+                                                        "headers": {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+                                                        },
+                                                        "body": {
+                                                            "model": "gpt-4.1",
+                                                            "instructions": "@{body('Parse_Agent_analyze_document')?['systemPrompt']}",
+                                                            "input": [
+                                                                {
+                                                                    "role": "user",
+                                                                    "content": [
+                                                                        {
+                                                                            "type": "input_file",
+                                                                            "file_id": "@{body('UploadFileResponse')?['id']}"
+                                                                        },
+                                                                        {
+                                                                            "type": "input_text",
+                                                                            "text": "@{body('Parse_Agent_analyze_document')['prompt']}"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "AnalyzeDocumentResult": {
+                                                    "runAfter": {
+                                                        "Analyze_Document": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "909a9998-c58d-4e1c-aacf-fbda4e247d26"
+                                                    },
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                        "content": "@body('Analyze_Document')",
+                                                        "schema": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "object": {
+                                                                    "type": "string"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "model": {
+                                                                    "type": "string"
+                                                                },
+                                                                "output": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "type": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "status": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "content": {
+                                                                                "type": "array",
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "annotations": {
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "text": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "type"
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "role": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "id",
+                                                                            "type"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "parallel_tool_calls": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "previous_response_id": {},
+                                                                "reasoning": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "effort": {},
+                                                                        "summary": {}
+                                                                    }
+                                                                },
+                                                                "service_tier": {
+                                                                    "type": "string"
+                                                                },
+                                                                "store": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "temperature": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "text": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "format": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "tool_choice": {
+                                                                    "type": "string"
+                                                                },
+                                                                "tools": {
+                                                                    "type": "array"
+                                                                },
+                                                                "top_p": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "truncation": {
+                                                                    "type": "string"
+                                                                },
+                                                                "user": {},
+                                                                "metadata": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "CompleteMessagesAnalyzedDocument": {
+                                                    "runAfter": {
+                                                        "AnalyzeDocumentResult": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "metadata": {
+                                                        "operationMetadataId": "d643ad66-85aa-434e-a68e-af9e513c1894"
+                                                    },
+                                                    "type": "Query",
+                                                    "inputs": {
+                                                        "from": "@body('AnalyzeDocumentResult')['output']",
+                                                        "where": "@and(equals(item()['type'], 'message'),equals(item()?['status'], 'completed'))"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "default": {
+                                        "actions": {
+                                            "Append_Not_Implemented": {
+                                                "runAfter": {
+                                                    "Post_Alert_-_Not_Implemented": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "3f33b751-49f9-497e-a47c-1d0331886575"
+                                                },
+                                                "type": "AppendToArrayVariable",
+                                                "inputs": {
+                                                    "name": "FunctionResponse",
+                                                    "value": {
+                                                        "type": "function_call_output",
+                                                        "call_id": "@{items('For_Each_Tool_Called')['call_id']}",
+                                                        "output": "@{body('Call_Project_Chatbot_API')}"
+                                                    }
+                                                }
+                                            },
+                                            "Post_Alert_-_Not_Implemented": {
+                                                "runAfter": {
+                                                    "Report_API_Error": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "6b3ac97c-70cd-4025-b54c-7a5064976290"
+                                                },
+                                                "type": "OpenApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                                                        "connectionName": "shared_teams",
+                                                        "operationId": "PostMessageToConversation"
+                                                    },
+                                                    "parameters": {
+                                                        "poster": "Flow bot",
+                                                        "location": "Chat with Flow bot",
+                                                        "body/recipient": "andre.silva@goldenergy.pt;",
+                                                        "body/messageBody": "<p>ASSISTENTE @{triggerBody()?['domain']}.<br>\nO agente @{triggerBody()?['AgentName']} fez a seguinte pergunta \"@{triggerBody()['Question']}\" e foi chamada a função @{items('For_Each_Tool_Called')['name']} que deu o erro @{outputs('Api_Error')}!</p>"
+                                                    },
+                                                    "authentication": "@parameters('$authentication')"
+                                                }
+                                            },
+                                            "Call_Project_Chatbot_API": {
+                                                "runAfter": {},
+                                                "limit": {
+                                                    "timeout": "PT90S"
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "0f76d508-394b-4881-bf67-47bf3a3873b7"
+                                                },
+                                                "type": "Http",
+                                                "inputs": {
+                                                    "method": "POST",
+                                                    "uri": "@{outputs('Configurations')['apiUrl']}",
+                                                    "body": "@addProperty(addProperty(items('For_Each_Tool_Called'),'agentName',triggerBody()?['AgentName']),'agentEmail',triggerBody()?['AgentEmail'])",
+                                                    "retryPolicy": {
+                                                        "type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "Api_Error": {
+                                                "runAfter": {
+                                                    "Call_Project_Chatbot_API": [
+                                                        "Failed"
+                                                    ]
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "91205059-f7d2-44ab-9da1-5857aad89be9"
+                                                },
+                                                "type": "Compose",
+                                                "inputs": "@body('Call_Project_Chatbot_API')"
+                                            },
+                                            "Add_API_Response": {
+                                                "runAfter": {
+                                                    "Call_Project_Chatbot_API": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "360245b6-a2ea-4808-b165-97bfc36a9777"
+                                                },
+                                                "type": "AppendToArrayVariable",
+                                                "inputs": {
+                                                    "name": "FunctionResponse",
+                                                    "value": {
+                                                        "type": "function_call_output",
+                                                        "call_id": "@{items('For_Each_Tool_Called')['call_id']}",
+                                                        "output": "@{body('Call_Project_Chatbot_API')}"
+                                                    }
+                                                }
+                                            },
+                                            "Report_API_Error": {
+                                                "runAfter": {
+                                                    "Api_Error": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "metadata": {
+                                                    "operationMetadataId": "07e6b7b0-38ec-471b-8067-856816ebb208"
+                                                },
+                                                "type": "OpenApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                                        "connectionName": "shared_sharepointonline_2",
+                                                        "operationId": "PostItem"
+                                                    },
+                                                    "parameters": {
+                                                        "dataset": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                                                        "table": "ecdbef88-d8ed-466e-ae2f-973431f58f4f",
+                                                        "item/Title": "@{formatDateTime(utcNow(), 'yy-MM-dd')} - @{triggerBody()?['AgentName']}",
+                                                        "item/Type": "Error",
+                                                        "item/AgentName": "@triggerBody()?['AgentName']",
+                                                        "item/Date": "@convertTimeZone(utcNow(), 'UTC', 'GMT Standard Time')",
+                                                        "item/Domain": "@outputs('Configurations')['domain']",
+                                                        "item/Evaluation": 1,
+                                                        "item/Comments": "Ocorreu um erro ao chamar a função: @{items('For_Each_Tool_Called')['name']} .\nErro: @{outputs('Api_Error')}",
+                                                        "item/AgentQuestions": "@triggerBody()['Question']"
+                                                    },
+                                                    "authentication": "@parameters('$authentication')"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "expression": "@items('For_Each_Tool_Called')['name']",
+                                    "metadata": {
+                                        "operationMetadataId": "5dcd89af-617f-4399-ad0b-5a92e1904dd8"
+                                    },
+                                    "type": "Switch"
+                                },
+                                "Append_FunctionCall_to_FunctionResponse": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                        "operationMetadataId": "a032fc31-854f-4b2e-8f19-0e71a291f242"
+                                    },
+                                    "type": "AppendToArrayVariable",
+                                    "inputs": {
+                                        "name": "FunctionResponse",
+                                        "value": "@removeProperty(removeProperty(removeProperty(items('For_Each_Tool_Called'),'status'),'id'),'role')"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "ToolsCalled": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "2c696c84-7f8a-4c5d-a570-6f7a1ad1277f"
+                            },
+                            "type": "Foreach",
+                            "runtimeConfiguration": {
+                                "concurrency": {
+                                    "repetitions": 50
+                                }
+                            }
+                        },
+                        "FinalResponse": {
+                            "runAfter": {
+                                "CompletedMessages": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "341851b8-b864-4607-b52f-5f3829dedab9"
+                            },
+                            "type": "Compose",
+                            "inputs": "@last(body('CompletedMessages'))?['content']?[0]?['text']"
+                        },
+                        "CompletedMessages": {
+                            "runAfter": {
+                                "For_Each_Tool_Called": [
+                                    "Succeeded",
+                                    "Skipped"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "43402f99-5610-4336-bbf0-5b5f3c1b0c12"
+                            },
+                            "type": "Query",
+                            "inputs": {
+                                "from": "@body('ParseOpenAI-Response')['output']",
+                                "where": "@and(equals(item()['type'], 'message'),equals(item()?['status'], 'completed'))"
+                            }
+                        },
+                        "Set_PreviousResponseId": {
+                            "runAfter": {
+                                "ParseOpenAI-Response": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "06dcd01d-1aed-4d4d-8602-8030818af5d2"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "PreviousResponseId",
+                                "value": "@body('ParseOpenAI-Response')['id']"
+                            }
+                        },
+                        "ErrorMessage": {
+                            "runAfter": {
+                                "OpenAI-Response": [
+                                    "Failed"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "ebe1f1b4-0cc7-4ae3-9205-eaa21d04f2c5"
+                            },
+                            "type": "Compose",
+                            "inputs": "Detalhes do erro: @{body('OpenAI-Response')?['error']?['message']}"
+                        },
+                        "ErrorMessage2": {
+                            "runAfter": {
+                                "For_Each_Tool_Called": [
+                                    "Failed",
+                                    "TimedOut"
+                                ]
+                            },
+                            "metadata": {
+                                "operationMetadataId": "5f40ae06-b6f8-47d8-9a23-61aa9203394d"
+                            },
+                            "type": "Compose",
+                            "inputs": "Detalhes do erro: Ocorreu um erro genérico a executar uma das funções @{coalesce(body('ToolsCalled'),json('[]'))}"
+                        }
+                    },
+                    "runAfter": {
+                        "Initialize_Functions": [
+                            "Succeeded"
+                        ],
+                        "Initialize_Instructions": [
+                            "Succeeded"
+                        ],
+                        "OutputFormat": [
+                            "Succeeded"
+                        ]
+                    },
+                    "expression": "@greater(add(add(length(coalesce(outputs('FinalResponse'), '')), length(coalesce(outputs('ErrorMessage'), ''))), length(coalesce(outputs('ErrorMessage2'), ''))), 1)",
+                    "limit": {
+                        "count": 6,
+                        "timeout": "PT100S"
+                    },
+                    "metadata": {
+                        "operationMetadataId": "490a24e6-7dd1-4d24-8e71-72d139a72243"
+                    },
+                    "type": "Until"
+                },
+                "Functions": {
+                    "runAfter": {
+                        "Load_Functions": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "7c57f0bd-7695-407e-9e74-fe4abd88ab72"
+                    },
+                    "type": "ParseJson",
+                    "inputs": {
+                        "content": "@base64ToString(body('Load_Functions')['$content'])",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "parameters": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "properties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "StartDate": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string"
+                                                            },
+                                                            "format": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "EndDate": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string"
+                                                            },
+                                                            "format": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "name",
+                                    "parameters"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "DefaultFunctions": {
+                    "runAfter": {
+                        "Functions": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "df40f1b1-0db5-4277-ba17-72d087ac38fd"
+                    },
+                    "type": "Compose",
+                    "inputs": [
+                        {
+                            "type": "file_search",
+                            "vector_store_ids": [
+                                "@{outputs('Configurations')['knowledgeBaseVectorStore']}"
+                            ],
+                            "max_num_results": 3
+                        },
+                        {
+                            "type": "function",
+                            "name": "content_not_available",
+                            "description": "Esta função deve ser chamada caso seja colocada uma pergunta, sigla ou tema especifico o qual não esteja no contexto fornecido.",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "Subject": {
+                                        "type": "string",
+                                        "description": "O assunto sobre o qual falta informação"
+                                    }
+                                },
+                                "required": [
+                                    "Subject"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "function",
+                            "name": "analyze_email_attachment",
+                            "description": "Esta função deve ser chamada caso seja necessário analisar o conteúdo de um documento. São permitidos ficheiros do tipo: Documentos: .pdf, .docx, .pptx; Texto marcado: .md, .txt, .html; Dados estruturados: .csv, .xml, .json; Imagens: PNG (.png), JPEG (.jpeg, .jpg), WEBP (.webp) e GIF não animados (.gif).",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "emailId": {
+                                        "type": "string",
+                                        "description": "ID do email que contêm o anexo."
+                                    },
+                                    "attachmentFileName": {
+                                        "type": "string",
+                                        "description": "Nome do ficheiro, incluindo a extensão. Se não disponível, inventa um nome."
+                                    },
+                                    "attachmentId": {
+                                        "type": "string",
+                                        "description": "ID do anexo a ser analisado."
+                                    },
+                                    "prompt": {
+                                        "type": "string",
+                                        "description": "Pergunta (prompt) a ser usado pela AI para extrair a informação necessária do documento."
+                                    },
+                                    "systemPrompt": {
+                                        "type": "string",
+                                        "description": "Prompt com o contexto necessário para a IA poder analisar o documento."
+                                    }
+                                },
+                                "required": [
+                                    "emailId",
+                                    "attachmentFileName",
+                                    "attachmentId",
+                                    "prompt"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Initialize_Functions": {
+                    "runAfter": {
+                        "WebSearchFunctions": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "47150f8a-d2aa-4b36-b9ae-0f94125227a3"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "Functions",
+                                "type": "array",
+                                "value": "@union(\r\n\tunion(\r\n\t\toutputs('DefaultFunctions'),\r\n\t\tbody('Functions')\r\n\t),\r\n\tif(startsWith(outputs('Configurations')['AiModel'],'o'),json('[]'),outputs('WebSearchFunctions'))\r\n)"
+                            }
+                        ]
+                    }
+                },
+                "Initialize_FunctionResponse": {
+                    "runAfter": {
+                        "Initialize_Messages": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "1b3632d1-6168-44be-a393-7e29a070d9fb"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "FunctionResponse",
+                                "type": "array",
+                                "value": []
+                            }
+                        ]
+                    }
+                },
+                "We_have_Error_Message": {
+                    "actions": {
+                        "Error_Response": {
+                            "runAfter": {},
+                            "metadata": {
+                                "operationMetadataId": "78db279c-6e49-4e6f-b6d9-33f604ba7a49"
+                            },
+                            "type": "Response",
+                            "kind": "Http",
+                            "inputs": {
+                                "statusCode": 500,
+                                "body": {
+                                    "reply": "@{outputs('ErrorMessage')}@{outputs('ErrorMessage2')}",
+                                    "responseId": "Error"
+                                }
+                            }
+                        }
+                    },
+                    "runAfter": {
+                        "Do_until": [
+                            "Succeeded",
+                            "Failed",
+                            "Skipped",
+                            "TimedOut"
+                        ]
+                    },
+                    "else": {
+                        "actions": {
+                            "Success_Response": {
+                                "runAfter": {},
+                                "metadata": {
+                                    "operationMetadataId": "c6ea7996-c416-40dc-ac12-d676ff8f1036"
+                                },
+                                "type": "Response",
+                                "kind": "Http",
+                                "inputs": {
+                                    "statusCode": 200,
+                                    "body": "@json(outputs('FinalResponse'))"
+                                }
+                            }
+                        }
+                    },
+                    "expression": {
+                        "greaterOrEquals": [
+                            "@add(length(coalesce(outputs('ErrorMessage'), '')), length(coalesce(outputs('ErrorMessage2'), '')))",
+                            1
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "bd15dffb-01f1-4848-8cad-e346b773edf1"
+                    },
+                    "type": "If"
+                },
+                "Initialize_PreviousResponseId": {
+                    "runAfter": {
+                        "Initialize_System_Messages": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "77403a82-f89b-452a-8763-134d1375e96e"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "PreviousResponseId",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "Initialize_Instructions": {
+                    "runAfter": {
+                        "Initialize_PreviousResponseId": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "5473d6de-aec3-446c-bf9c-1a261a0ca0c6"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "Instructions",
+                                "type": "string",
+                                "value": "# Identity\nYou are the “Email AI Writer” from Goldenergy - a Portuguese Utility Company\nYour thinking should be thorough and so it's fine if it's very long. You can think step by step before and after each action you decide to take.\n\n# OBJECTIVE\nAnalisa o email fornecido (campos: originalMailbox, to, cc, subject, body, bodyFormat, attachments), e compõe um email de resposta.\nDevolve um objecto JSON com a seguinte informação:\n- **subjectPrefix**: \"<opcional. texto a adicionar no inicio do assunto original>\"\n- **body**: \"<texto da resposta no idioma indicado. Usar formatação em HTML.>\"\n- **confidence**: <Número inteiro a indicar a confiança e segurança na escrita deste email>\n- **language**: \"<Código da cultura usada na composição do email. Exemplo pt-PT ou en-US.>\"\n\n# Rules\n## WRITING TIPS\n- **Não inventes informação**: se faltar contexto essencial ou não existirem instruções claras e absolutas sobre como tratar o email, atribui um emailClassificationConfidence inferior a 30.\n- Usa a base de conhecimento fornecida para compôr uma resposta.\n- Se o email indicar alguma ação (pedido de rescisão, pedido de assistência, etc), podes usar a executar a ação usando a lista de ações disponibilizada.\n- No caso de respostas (RE:) ou forwards (FW:) considera que o último pedido do cliente está no inicio do email. Abaixo estão encadeadas as restantes trocas de mensagens.\n- No caso do email ser o preenchimento de um formulário, que foi reencaminhado, analisa o conteúdo do corpo do email para identificar o nome do cliente, endereço de email e outros dados.\n- Formata o body, da acção reply, em formato HTML, mas nºao devolvas as tags HTML nem a HEAD. Devolve apenas o corpo do email.\n- No caso de falta de alguma informação ou no caso do email original não estar totalmente claro, devolve um \n\n## PERSISTENCE\nYou are an agent - please keep going until the user's query is completely \nresolved, before ending your turn and yielding back to the full email.\n\n## TOOL CALLING\nIf you are not sure about file content or codebase structure pertaining to \nthe user's request, use your tools to read files and gather the relevant \ninformation: do NOT guess or make up an answer.\nYou can search the web if extremelly necessary\n\n## PLANNING\nYou MUST plan extensively before each function call, and reflect \nextensively on the outcomes of the previous function calls. DO NOT do this \nentire process by making function calls only, as this can impair your \nability to solve the problem and think insightfully.\n\n"
+                            }
+                        ]
+                    }
+                },
+                "Email_Object": {
+                    "runAfter": {
+                        "Configurations": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "d78d06bb-5825-41f7-ad01-7feb806a1c60"
+                    },
+                    "type": "Compose",
+                    "inputs": {
+                        "emailId": "@{triggerBody()?['emailId']}",
+                        "from": "@{triggerBody()?['from']}",
+                        "to": "@{triggerBody()['to']}",
+                        "cc": "@{triggerBody()?['cc']}",
+                        "subject": "@{triggerBody()['subject']}",
+                        "attachments": "@triggerBody()?['attachments']",
+                        "body": "@{triggerBody()['body']}",
+                        "isHtml": "@triggerBody()?['isHtml']",
+                        "receivedDateTime": "@{triggerBody()?['receivedDateTime']}"
+                    }
+                },
+                "OutputFormat": {
+                    "runAfter": {
+                        "Initialize_FunctionResponse": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "1a76c814-dbc0-465f-8fdd-6340488e1620"
+                    },
+                    "type": "Compose",
+                    "inputs": {
+                        "type": "json_schema",
+                        "name": "EmailProcessingResponse",
+                        "strict": false,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "subjectPrefix": {
+                                    "type": "string",
+                                    "description": "texto a adicionar no inicio do assunto original",
+                                    "example": "RE: "
+                                },
+                                "language": {
+                                    "type": "string",
+                                    "description": "Código da cultura usada na composição do email. Exemplo pt-PT ou en-US.",
+                                    "example": "pt-PT"
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Texto final e completo da resposta a enviar ao cliente, no idioma indicado. Usar formatação em HTML."
+                                },
+                                "confidence": {
+                                    "type": "integer",
+                                    "description": "Confiança na composição do email. Qual a certeza de que a resposta está totalmente correta e baseada em conteúdos disponibilizados nos ficheiros de conhecimento passados (0=sem certeza … 100=certeza total)"
+                                }
+                            },
+                            "required": [
+                                "body"
+                            ]
+                        }
+                    }
+                },
+                "WebSearchFunctions": {
+                    "runAfter": {
+                        "DefaultFunctions": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "b10234b1-6af2-4a6d-b8d3-79a964f6296e"
+                    },
+                    "type": "Compose",
+                    "inputs": [
+                        {
+                            "type": "web_search",
+                            "search_context_size": "medium",
+                            "user_location": {
+                                "type": "approximate",
+                                "country": "PT",
+                                "city": "Porto",
+                                "region": "Porto",
+                                "timezone": "Europe/Lisbon"
+                            }
+                        }
+                    ]
+                },
+                "Get_DefaultPersona": {
+                    "runAfter": {
+                        "Configurations": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "%252fDocumentos%2bPartilhados%252f0.%2bGeral%252f30.%2bKnowledge%2bBase%252fDefaultPersona.txt": "/Documentos Partilhados/0. Geral/30. Knowledge Base/DefaultPersona.txt",
+                        "operationMetadataId": "258b0ada-a307-4e70-a70b-43c9d809d2c3"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                        "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                            "connectionName": "shared_sharepointonline_2",
+                            "operationId": "GetFileContent"
+                        },
+                        "parameters": {
+                            "dataset": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                            "id": "%252fDocumentos%2bPartilhados%252f0.%2bGeral%252f30.%2bKnowledge%2bBase%252fDefaultPersona.txt",
+                            "inferContentType": true
+                        },
+                        "authentication": "@parameters('$authentication')"
+                    }
+                },
+                "DefaultPersona": {
+                    "runAfter": {
+                        "Get_DefaultPersona": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "3c655e0f-6330-4fe3-b808-422562638421"
+                    },
+                    "type": "Compose",
+                    "inputs": "@concat(body('Get_DefaultPersona'), 'O dia de hoje é ', formatDateTime(utcNow(), 'yyyy-MM-dd'))"
+                },
+                "Initialize_DefaultPersona": {
+                    "runAfter": {
+                        "DefaultPersona": [
+                            "Succeeded"
+                        ]
+                    },
+                    "metadata": {
+                        "operationMetadataId": "62e64006-5db8-404e-8168-adaeddd2ad15"
+                    },
+                    "type": "InitializeVariable",
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "DefaultPersona",
+                                "type": "string",
+                                "value": "@{outputs('DefaultPersona')}"
+                            }
+                        ]
+                    }
+                }
+            },
+            "outputs": {},
+            "description": "API que recebe um email de um cliente e todo o conhecimento e APIs necessárias para poder compôr um email de resposta."
+        },
+        "triggerSchema": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "description": "Nome do projeto ou produto.",
+                    "example": "Mobilidade elétrica"
+                },
+                "projectDescription": {
+                    "type": "string",
+                    "description": "Descrição do projeto e área de negócio.",
+                    "example": "todos os temas relacionados com mobilidade elétrica"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Código do idioma e cultura a ser usada na escrita do email.",
+                    "example": "pt-PT"
+                },
+                "from": {
+                    "type": "string",
+                    "description": "Email do remetente."
+                },
+                "to": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Lista de destinatários principais do email, separados por ,."
+                },
+                "cc": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Lista de destinatários em cópia (CC), separados por virgula"
+                },
+                "subject": {
+                    "type": "string",
+                    "description": "Assunto do email.",
+                    "example": "Pedido de informação sobre excedentes"
+                },
+                "body": {
+                    "type": "string",
+                    "description": "Conteúdo do email, em texto simples ou HTML.",
+                    "example": "<p>Boa tarde, queremos saber os valores de excedentes do mês passado.</p>"
+                },
+                "isHtml": {
+                    "type": "boolean"
+                },
+                "attachments": {
+                    "type": "array",
+                    "description": "Lista de anexos do email.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Nome do ficheiro.",
+                                "example": "fatura_mars2025.pdf"
+                            },
+                            "contentType": {
+                                "type": "string",
+                                "description": "MIME type do anexo.",
+                                "example": "application/pdf"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL pre-assinada para download do anexo.",
+                                "example": "https://storage.azure.com/.../fatura_mars2025.pdf?sv=..."
+                            },
+                            "lastModifiedDateTime": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "sizeInKB": {
+                                "type": "integer"
+                            },
+                            "isInline": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "contentType",
+                            "sizeInKB"
+                        ]
+                    }
+                },
+                "knowledgeBaseVectorStore": {
+                    "type": "string",
+                    "description": "Id do vector store onde estão os ficheiros de conhecimento."
+                },
+                "functionsPath": {
+                    "type": "string",
+                    "description": "URL para o ficheiro JSON que descreve funções custom e tool-calling.",
+                    "example": "https://storage.azure.com/funcoes-extra.json"
+                },
+                "apiUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Endpoint HTTP do Power Automate que expõe as funções definidas.",
+                    "example": "https://prod-01.westeurope.logic.azure.com/workflows/..."
+                },
+                "replySenderName": {
+                    "type": "string",
+                    "description": "Nome a colocar na assinatura do email.",
+                    "example": "Equipa do NewEnergy"
+                },
+                "persona": {
+                    "type": "string",
+                    "description": "Instruções sobre o tom e tipo de escrita na composição do email.",
+                    "example": "Deves tratar sempre o cliente por você, sem usar palavra você, e podes usar emojies (sem abusar)."
+                },
+                "AiModel": {
+                    "type": "string",
+                    "description": "Modelo de AI a usar",
+                    "example": "o4-mini"
+                },
+                "ReasoningLevel": {
+                    "type": "string",
+                    "description": "Nível de raciocinio para os modelos de reasoning",
+                    "example": "high"
+                },
+                "receivedDateTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp ISO 8601 de quando o email foi recebido.",
+                    "example": "2025-04-23T14:35:00Z"
+                },
+                "importance": {
+                    "type": "string",
+                    "enum": [
+                        "low",
+                        "normal",
+                        "high"
+                    ],
+                    "description": "Nível de importância do email.",
+                    "example": "normal"
+                }
+            },
+            "required": [
+                "originalMailbox",
+                "from",
+                "subject",
+                "body",
+                "functionsPath",
+                "apiUrl"
+            ]
+        },
+        "state": "Started",
+        "sharingType": "CommonDataService",
+        "plan": "NotSpecified",
+        "connectionReferences": {
+            "shared_sharepointonline_2": {
+                "connectionName": "shared-sharepointonl-54cc3515-4f58-41c4-8edc-79a2461cb03d",
+                "connectionReferenceLogicalName": "new_sharedsharepointonline_89406",
+                "apiDefinition": {
+                    "name": "shared_sharepointonline",
+                    "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "type": "/providers/Microsoft.PowerApps/apis",
+                    "properties": {
+                        "displayName": "SharePoint",
+                        "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                        "purpose": "NotSpecified",
+                        "connectionParameters": {
+                            "token": {
+                                "type": "oauthSetting",
+                                "oAuthSettings": {
+                                    "identityProvider": "sharepointonlinecertificateV2",
+                                    "clientId": "7ab7862c-4c57-491e-8a45-d52a7e023983",
+                                    "scopes": [],
+                                    "redirectMode": "GlobalPerConnector",
+                                    "redirectUrl": "https://global.consent.azure-apim.net/redirect/sharepointonline",
+                                    "properties": {
+                                        "IsFirstParty": "True",
+                                        "IsOnbehalfofLoginSupported": true
+                                    },
+                                    "customParameters": {
+                                        "ResourceUriAAD": {
+                                            "value": "https://graph.microsoft.com/"
+                                        },
+                                        "loginUri": {
+                                            "value": "https://login.windows.net"
+                                        },
+                                        "LoginUriAAD": {
+                                            "value": "https://login.windows.net"
+                                        },
+                                        "ResourceUri": {
+                                            "value": "https://graph.microsoft.com"
+                                        }
+                                    }
+                                },
+                                "uiDefinition": {
+                                    "displayName": "Log in with SharePoint Credentials",
+                                    "description": "Log in with SharePoint Credentials",
+                                    "tooltip": "Provide SharePoint Credentials",
+                                    "constraints": {
+                                        "required": "true",
+                                        "capability": [
+                                            "cloud"
+                                        ]
+                                    }
+                                }
+                            },
+                            "token:TenantId": {
+                                "type": "string",
+                                "metadata": {
+                                    "sourceType": "AzureActiveDirectoryTenant"
+                                },
+                                "uiDefinition": {
+                                    "displayName": "Tenant",
+                                    "description": "The tenant ID of for the Microsoft Entra ID application",
+                                    "constraints": {
+                                        "required": "false",
+                                        "hidden": "true"
+                                    }
+                                }
+                            },
+                            "gateway": {
+                                "type": "gatewaySetting",
+                                "gatewaySettings": {
+                                    "dataSourceType": "SharePoint",
+                                    "connectionDetails": []
+                                },
+                                "uiDefinition": {
+                                    "tabIndex": 1,
+                                    "constraints": {
+                                        "hidden": "false",
+                                        "capability": [
+                                            "gateway"
+                                        ]
+                                    }
+                                }
+                            },
+                            "authType": {
+                                "type": "string",
+                                "allowedValues": [
+                                    {
+                                        "value": "windows"
+                                    }
+                                ],
+                                "uiDefinition": {
+                                    "displayName": "Authentication Type",
+                                    "description": "Authentication type to connect to your database",
+                                    "tooltip": "Authentication type to connect to your database",
+                                    "constraints": {
+                                        "tabIndex": 2,
+                                        "required": "false",
+                                        "allowedValues": [
+                                            {
+                                                "text": "Windows",
+                                                "value": "windows"
+                                            }
+                                        ],
+                                        "capability": [
+                                            "gateway"
+                                        ]
+                                    }
+                                }
+                            },
+                            "username": {
+                                "type": "securestring",
+                                "uiDefinition": {
+                                    "displayName": "Username",
+                                    "description": "Username credential",
+                                    "tooltip": "Username credential",
+                                    "constraints": {
+                                        "tabIndex": 3,
+                                        "clearText": true,
+                                        "required": "true",
+                                        "capability": [
+                                            "gateway"
+                                        ]
+                                    }
+                                }
+                            },
+                            "password": {
+                                "type": "securestring",
+                                "uiDefinition": {
+                                    "displayName": "Password",
+                                    "description": "Password credential",
+                                    "tooltip": "Password credential",
+                                    "constraints": {
+                                        "tabIndex": 4,
+                                        "required": "true",
+                                        "capability": [
+                                            "gateway"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "scopes": {
+                            "will": [
+                                "Read list and library names, as well as the names of the columns",
+                                "Create, read, update, copy and delete files and metadata",
+                                "Create, read, update, and delete list items"
+                            ],
+                            "wont": []
+                        },
+                        "runtimeUrls": [
+                            "https://default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9.02.common.europe002.azure-apihub.net/apim/sharepointonline"
+                        ],
+                        "primaryRuntimeUrl": "https://default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9.02.common.europe002.azure-apihub.net/apim/sharepointonline",
+                        "metadata": {
+                            "source": "marketplace",
+                            "brandColor": "",
+                            "useNewApimVersion": "true",
+                            "version": {
+                                "previous": "releases/v1.0.1746\\1.0.1746.4174",
+                                "current": "v1.0.1754\\1.0.1754.4231"
+                            }
+                        },
+                        "capabilities": [
+                            "tabular",
+                            "gateway",
+                            "cloud",
+                            "federatedKnowledgeSource"
+                        ],
+                        "tier": "Standard",
+                        "isCustomApi": false,
+                        "description": "SharePoint helps organizations share and collaborate with colleagues, partners, and customers. You can connect to SharePoint Online or to an on-premises SharePoint 2016 or 2019 farm using the On-Premises Data Gateway to manage documents and list items.",
+                        "createdTime": "2018-07-31T14:29:25.515029Z",
+                        "changedTime": "2025-06-19T17:36:26.6791771Z",
+                        "publisher": "Microsoft"
+                    }
+                },
+                "source": "Embedded",
+                "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "displayName": "SharePoint",
+                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                "brandColor": "",
+                "tier": "Standard",
+                "apiName": "sharepointonline",
+                "operationDefinitions": {
+                    "GetFileContentByPath": {
+                        "inputsSchema": {
+                            "type": "object",
+                            "properties": {
+                                "dataset": {
+                                    "type": "string",
+                                    "title": "Site Address",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetDataSets",
+                                        "parameters": {},
+                                        "itemsPath": "value",
+                                        "itemValuePath": "Name",
+                                        "itemTitlePath": "DisplayName"
+                                    },
+                                    "description": "Example: https://contoso.sharepoint.com/sites/sitename.",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "dataset"
+                                },
+                                "path": {
+                                    "type": "string",
+                                    "title": "File Path",
+                                    "x-ms-dynamic-tree": {
+                                        "settings": {
+                                            "canSelectParentNodes": false,
+                                            "canSelectLeafNodes": true
+                                        },
+                                        "open": {
+                                            "operationId": "ListAllRootFolders",
+                                            "parameters": {
+                                                "dataset": {
+                                                    "parameterReference": "dataset",
+                                                    "required": true
+                                                }
+                                            },
+                                            "itemValuePath": "Path",
+                                            "itemTitlePath": "DisplayName",
+                                            "itemFullTitlePath": "Path",
+                                            "itemIsParent": "(IsFolder eq true)"
+                                        },
+                                        "browse": {
+                                            "operationId": "ListFolder",
+                                            "parameters": {
+                                                "dataset": {
+                                                    "parameterReference": "dataset",
+                                                    "required": true
+                                                },
+                                                "id": {
+                                                    "selectedItemValuePath": "Id"
+                                                }
+                                            },
+                                            "itemValuePath": "Path",
+                                            "itemTitlePath": "DisplayName",
+                                            "itemFullTitlePath": "Path",
+                                            "itemIsParent": "(IsFolder eq true)"
+                                        }
+                                    },
+                                    "description": "Select a file.",
+                                    "x-ms-property-name-alias": "path"
+                                },
+                                "inferContentType": {
+                                    "type": "boolean",
+                                    "title": "Infer Content Type",
+                                    "description": "Infer content-type based on extension.",
+                                    "default": true,
+                                    "x-ms-visibility": "advanced",
+                                    "x-ms-property-name-alias": "inferContentType"
+                                }
+                            },
+                            "required": [
+                                "dataset",
+                                "path"
+                            ]
+                        },
+                        "responsesSchema": {
+                            "200": {
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "string",
+                                        "title": "File Content",
+                                        "format": "binary",
+                                        "description": "The content of the file.",
+                                        "x-ms-property-name-alias": "body"
+                                    }
+                                }
+                            }
+                        },
+                        "pageable": false,
+                        "isChunkingSupported": false,
+                        "description": "Gets file contents using the file path."
+                    },
+                    "GetFileContent": {
+                        "inputsSchema": {
+                            "type": "object",
+                            "properties": {
+                                "dataset": {
+                                    "type": "string",
+                                    "title": "Site Address",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetDataSets",
+                                        "parameters": {},
+                                        "itemsPath": "value",
+                                        "itemValuePath": "Name",
+                                        "itemTitlePath": "DisplayName"
+                                    },
+                                    "description": "Example: https://contoso.sharepoint.com/sites/sitename.",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "dataset"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "title": "File Identifier",
+                                    "x-ms-dynamic-tree": {
+                                        "settings": {
+                                            "canSelectParentNodes": false,
+                                            "canSelectLeafNodes": true
+                                        },
+                                        "open": {
+                                            "operationId": "ListAllRootFolders",
+                                            "parameters": {
+                                                "dataset": {
+                                                    "parameterReference": "dataset",
+                                                    "required": true
+                                                }
+                                            },
+                                            "itemValuePath": "Id",
+                                            "itemTitlePath": "DisplayName",
+                                            "itemFullTitlePath": "Path",
+                                            "itemIsParent": "(IsFolder eq true)"
+                                        },
+                                        "browse": {
+                                            "operationId": "ListFolder",
+                                            "parameters": {
+                                                "dataset": {
+                                                    "parameterReference": "dataset",
+                                                    "required": true
+                                                },
+                                                "id": {
+                                                    "selectedItemValuePath": "Id"
+                                                }
+                                            },
+                                            "itemValuePath": "Id",
+                                            "itemTitlePath": "DisplayName",
+                                            "itemFullTitlePath": "Path",
+                                            "itemIsParent": "(IsFolder eq true)"
+                                        }
+                                    },
+                                    "description": "Select a file.",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "id"
+                                },
+                                "inferContentType": {
+                                    "type": "boolean",
+                                    "title": "Infer Content Type",
+                                    "description": "Infer content-type based on extension.",
+                                    "default": true,
+                                    "x-ms-visibility": "advanced",
+                                    "x-ms-property-name-alias": "inferContentType"
+                                }
+                            },
+                            "required": [
+                                "dataset",
+                                "id"
+                            ]
+                        },
+                        "responsesSchema": {
+                            "200": {
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "string",
+                                        "title": "File Content",
+                                        "format": "binary",
+                                        "description": "The content of the file.",
+                                        "x-ms-property-name-alias": "body"
+                                    }
+                                }
+                            }
+                        },
+                        "pageable": false,
+                        "isChunkingSupported": false,
+                        "description": "Gets file contents using the file identifier. The contents can be copied somewhere else, or be used as an attachment."
+                    },
+                    "PostItem": {
+                        "inputsSchema": {
+                            "type": "object",
+                            "properties": {
+                                "dataset": {
+                                    "type": "string",
+                                    "title": "Site Address",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetDataSets",
+                                        "parameters": {},
+                                        "itemsPath": "value",
+                                        "itemValuePath": "Name",
+                                        "itemTitlePath": "DisplayName"
+                                    },
+                                    "description": "Example: https://contoso.sharepoint.com/sites/sitename",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "dataset"
+                                },
+                                "table": {
+                                    "type": "string",
+                                    "title": "List Name",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetTables",
+                                        "parameters": {
+                                            "dataset": {
+                                                "parameterReference": "dataset",
+                                                "required": true
+                                            }
+                                        },
+                                        "itemsPath": "value",
+                                        "itemValuePath": "Name",
+                                        "itemTitlePath": "DisplayName"
+                                    },
+                                    "description": "SharePoint list name",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "table"
+                                },
+                                "item": {
+                                    "type": "object",
+                                    "title": "Item",
+                                    "x-ms-dynamic-properties": {
+                                        "operationId": "GetTable",
+                                        "parameters": {
+                                            "dataset": {
+                                                "parameterReference": "dataset",
+                                                "required": true
+                                            },
+                                            "table": {
+                                                "parameterReference": "table",
+                                                "required": true
+                                            },
+                                            "view": {
+                                                "parameterReference": "view",
+                                                "required": false
+                                            }
+                                        },
+                                        "itemValuePath": "Schema/Items"
+                                    },
+                                    "description": "Item to create",
+                                    "x-ms-property-name-alias": "item"
+                                },
+                                "view": {
+                                    "type": "string",
+                                    "title": "Limit Columns by View",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetTableViews",
+                                        "parameters": {
+                                            "dataset": {
+                                                "parameterReference": "dataset",
+                                                "required": true
+                                            },
+                                            "table": {
+                                                "parameterReference": "table",
+                                                "required": true
+                                            }
+                                        },
+                                        "itemValuePath": "Name",
+                                        "itemTitlePath": "DisplayName"
+                                    },
+                                    "description": "Avoid column threshold issues by only using columns defined in a view",
+                                    "x-ms-visibility": "advanced",
+                                    "x-ms-property-name-alias": "view"
+                                }
+                            },
+                            "required": [
+                                "dataset",
+                                "item",
+                                "table"
+                            ]
+                        },
+                        "responsesSchema": {
+                            "200": {
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "x-ms-dynamic-properties": {
+                                            "operationId": "GetTable",
+                                            "parameters": {
+                                                "dataset": {
+                                                    "parameterReference": "dataset",
+                                                    "required": true
+                                                },
+                                                "table": {
+                                                    "parameterReference": "table",
+                                                    "required": true
+                                                },
+                                                "view": {
+                                                    "parameterReference": "view",
+                                                    "required": false
+                                                }
+                                            },
+                                            "itemValuePath": "Schema/Items"
+                                        },
+                                        "x-ms-property-name-alias": "body"
+                                    }
+                                }
+                            }
+                        },
+                        "pageable": false,
+                        "isChunkingSupported": false,
+                        "description": "Creates a new item in a SharePoint list."
+                    }
+                },
+                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+            },
+            "shared_teams": {
+                "connectionName": "shared-teams-d4f45851-06ff-4ed9-9d50-9547c59172b6",
+                "connectionReferenceLogicalName": "new_sharedteams_4c5db",
+                "apiDefinition": {
+                    "name": "shared_teams",
+                    "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                    "type": "/providers/Microsoft.PowerApps/apis",
+                    "properties": {
+                        "displayName": "Microsoft Teams",
+                        "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                        "purpose": "NotSpecified",
+                        "connectionParameters": {
+                            "token": {
+                                "type": "oauthSetting",
+                                "oAuthSettings": {
+                                    "identityProvider": "aadcertificate",
+                                    "clientId": "4b55a631-6b07-4d07-a701-28f46d72f3df",
+                                    "scopes": [
+                                        "User.Read.All",
+                                        "Group.ReadWrite.All",
+                                        "Group.Read.All"
+                                    ],
+                                    "redirectMode": "GlobalPerConnector",
+                                    "redirectUrl": "https://global.consent.azure-apim.net/redirect/teams",
+                                    "properties": {
+                                        "IsFirstParty": "True",
+                                        "AzureActiveDirectoryResourceId": "https://graph.microsoft.com",
+                                        "IsOnbehalfofLoginSupported": true
+                                    },
+                                    "customParameters": {
+                                        "ResourceUri": {
+                                            "value": "https://graph.microsoft.com"
+                                        },
+                                        "loginUri": {
+                                            "value": "https://login.windows.net"
+                                        },
+                                        "LoginUriAAD": {
+                                            "value": "https://login.windows.net"
+                                        }
+                                    }
+                                }
+                            },
+                            "token:TenantId": {
+                                "type": "string",
+                                "metadata": {
+                                    "sourceType": "AzureActiveDirectoryTenant"
+                                },
+                                "uiDefinition": {
+                                    "displayName": "Tenant",
+                                    "description": "The tenant ID of for the Microsoft Entra ID application",
+                                    "constraints": {
+                                        "required": "false",
+                                        "hidden": "true"
+                                    }
+                                }
+                            }
+                        },
+                        "scopes": {
+                            "will": [],
+                            "wont": []
+                        },
+                        "runtimeUrls": [
+                            "https://default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9.02.common.europe002.azure-apihub.net/apim/teams"
+                        ],
+                        "primaryRuntimeUrl": "https://default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9.02.common.europe002.azure-apihub.net/apim/teams",
+                        "metadata": {
+                            "source": "marketplace",
+                            "brandColor": "",
+                            "useNewApimVersion": "true",
+                            "version": {
+                                "previous": "v1.0.1754\\1.0.1754.4231",
+                                "current": "v1.0.1757\\1.0.1757.4256"
+                            }
+                        },
+                        "capabilities": [
+                            "actions",
+                            "triggers"
+                        ],
+                        "tier": "Standard",
+                        "isCustomApi": false,
+                        "description": "Microsoft Teams enables you to get all your content, tools and conversations in the Team workspace with Microsoft 365.",
+                        "createdTime": "2018-09-06T17:45:40.521948Z",
+                        "changedTime": "2025-06-30T19:17:00.5659658Z",
+                        "publisher": "Microsoft"
+                    }
+                },
+                "source": "Embedded",
+                "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                "displayName": "Microsoft Teams",
+                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                "brandColor": "",
+                "tier": "Standard",
+                "apiName": "teams",
+                "operationDefinitions": {
+                    "PostMessageToConversation": {
+                        "inputsSchema": {
+                            "type": "object",
+                            "properties": {
+                                "poster": {
+                                    "type": "string",
+                                    "title": "Post as",
+                                    "description": "Select an option",
+                                    "default": "Flow bot",
+                                    "enum": [
+                                        "Power Virtual Agents",
+                                        "Flow bot",
+                                        "User"
+                                    ],
+                                    "minLength": 1,
+                                    "x-ms-enum-values": [
+                                        {
+                                            "displayName": "User",
+                                            "value": "User"
+                                        },
+                                        {
+                                            "displayName": "Flow bot",
+                                            "value": "Flow bot"
+                                        },
+                                        {
+                                            "displayName": "Power Virtual Agents (Preview)",
+                                            "value": "Power Virtual Agents"
+                                        }
+                                    ],
+                                    "x-ms-property-name-alias": "poster"
+                                },
+                                "location": {
+                                    "type": "string",
+                                    "title": "Post in",
+                                    "x-ms-dynamic-list": {
+                                        "operationId": "GetMessageLocations",
+                                        "parameters": {
+                                            "messageType": {
+                                                "value": "ParentMessage"
+                                            },
+                                            "poster": {
+                                                "parameterReference": "poster",
+                                                "required": true
+                                            }
+                                        },
+                                        "itemsPath": "value",
+                                        "itemValuePath": "id",
+                                        "itemTitlePath": "displayName"
+                                    },
+                                    "description": "Select an option",
+                                    "minLength": 1,
+                                    "x-ms-property-name-alias": "location"
+                                },
+                                "body": {
+                                    "type": "object",
+                                    "title": "Post message request",
+                                    "x-ms-dynamic-properties": {
+                                        "operationId": "GetUnifiedActionSchema",
+                                        "parameters": {
+                                            "actionType": {
+                                                "value": "Message"
+                                            },
+                                            "poster": {
+                                                "parameterReference": "poster",
+                                                "required": true
+                                            },
+                                            "recipientType": {
+                                                "parameterReference": "location",
+                                                "required": true
+                                            }
+                                        },
+                                        "itemValuePath": "schema"
+                                    },
+                                    "description": "The post message request",
+                                    "x-ms-property-name-alias": "body"
+                                }
+                            },
+                            "required": [
+                                "body",
+                                "location",
+                                "poster"
+                            ]
+                        },
+                        "responsesSchema": {
+                            "default": {
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "title": "Message ID",
+                                                "description": "Unique message ID",
+                                                "x-ms-property-name-alias": "body/id"
+                                            },
+                                            "messageLink": {
+                                                "type": "string",
+                                                "title": "Message link",
+                                                "description": "Link to the message in Microsoft Teams",
+                                                "x-ms-property-name-alias": "body/messageLink"
+                                            },
+                                            "conversationId": {
+                                                "type": "string",
+                                                "title": "Conversation ID",
+                                                "description": "The chat's unique identifier",
+                                                "x-ms-property-name-alias": "body/conversationId"
+                                            }
+                                        },
+                                        "required": [],
+                                        "x-ms-property-name-alias": "body"
+                                    }
+                                }
+                            }
+                        },
+                        "pageable": false,
+                        "isChunkingSupported": false,
+                        "description": "Posts a message to a chat or a channel"
+                    }
+                },
+                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+            }
+        },
+        "createdTime": "2025-06-02T13:43:44.394325Z",
+        "lastModifiedTime": "2025-06-12T15:38:58Z",
+        "flowSuspensionReason": "None",
+        "environment": {
+            "name": "Default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9",
+            "type": "Microsoft.ProcessSimple/environments",
+            "id": "/providers/Microsoft.ProcessSimple/environments/Default-35bc953e-5dc5-4cad-821b-a0cc4f4d39d9"
+        },
+        "definitionSummary": {
+            "triggers": [
+                {
+                    "type": "Request",
+                    "kind": "Http",
+                    "metadata": {
+                        "operationMetadataId": "880616be-e4dd-4652-ab37-a1e04554a4da"
+                    }
+                }
+            ],
+            "actions": [
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "9af46c0e-821e-470e-85f7-1d4c7bf01318"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "e6e03070-2525-4e65-bd78-93f696012f0f"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "226968b3-1a23-469d-bc3b-3b040c61a133"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "GetFileContentByPath",
+                    "apiOperation": {
+                        "name": "GetFileContentByPath",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContentByPath",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Get file content using path",
+                            "description": "Gets file contents using the file path.",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "GetFileContentByPath",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/sharepointonline/#get-file-content-using-path",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                "displayName": "SharePoint",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "sharepointonline",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "SharePointFileData"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "operationMetadataId": "7a4b403a-ca07-46db-93a6-4d41137d0be8"
+                    },
+                    "api": {
+                        "name": "shared_sharepointonline",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "SharePoint",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "releases/v1.0.1746\\1.0.1746.4174",
+                                    "current": "v1.0.1754\\1.0.1754.4231"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "SharePoint helps organizations share and collaborate with colleagues, partners, and customers. You can connect to SharePoint Online or to an on-premises SharePoint 2016 or 2019 farm using the On-Premises Data Gateway to manage documents and list items."
+                        }
+                    }
+                },
+                {
+                    "type": "Until",
+                    "metadata": {
+                        "operationMetadataId": "490a24e6-7dd1-4d24-8e71-72d139a72243"
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "7c57f0bd-7695-407e-9e74-fe4abd88ab72"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "df40f1b1-0db5-4277-ba17-72d087ac38fd"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "47150f8a-d2aa-4b36-b9ae-0f94125227a3"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "1b3632d1-6168-44be-a393-7e29a070d9fb"
+                    }
+                },
+                {
+                    "type": "If",
+                    "metadata": {
+                        "operationMetadataId": "bd15dffb-01f1-4848-8cad-e346b773edf1"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "77403a82-f89b-452a-8763-134d1375e96e"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "5473d6de-aec3-446c-bf9c-1a261a0ca0c6"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "d78d06bb-5825-41f7-ad01-7feb806a1c60"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "1a76c814-dbc0-465f-8fdd-6340488e1620"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "b10234b1-6af2-4a6d-b8d3-79a964f6296e"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "GetFileContent",
+                    "apiOperation": {
+                        "name": "GetFileContent",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContent",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Get file content",
+                            "description": "Gets file contents using the file identifier. The contents can be copied somewhere else, or be used as an attachment.",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "GetFileContent",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/sharepointonline/#get-file-content",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                "displayName": "SharePoint",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "sharepointonline",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "SharePointFileData"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "%252fDocumentos%2bPartilhados%252f0.%2bGeral%252f30.%2bKnowledge%2bBase%252fDefaultPersona.txt": "/Documentos Partilhados/0. Geral/30. Knowledge Base/DefaultPersona.txt",
+                        "operationMetadataId": "258b0ada-a307-4e70-a70b-43c9d809d2c3"
+                    },
+                    "api": {
+                        "name": "shared_sharepointonline",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "SharePoint",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "releases/v1.0.1746\\1.0.1746.4174",
+                                    "current": "v1.0.1754\\1.0.1754.4231"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "SharePoint helps organizations share and collaborate with colleagues, partners, and customers. You can connect to SharePoint Online or to an on-premises SharePoint 2016 or 2019 farm using the On-Premises Data Gateway to manage documents and list items."
+                        }
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "3c655e0f-6330-4fe3-b808-422562638421"
+                    }
+                },
+                {
+                    "type": "InitializeVariable",
+                    "metadata": {
+                        "operationMetadataId": "62e64006-5db8-404e-8168-adaeddd2ad15"
+                    }
+                },
+                {
+                    "type": "Http",
+                    "metadata": {
+                        "operationMetadataId": "7876eb6c-2990-49c3-bad0-f43732fdd598"
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "7bfc0b50-b791-4b0d-86c4-3fb1d1bef415"
+                    }
+                },
+                {
+                    "type": "Query",
+                    "metadata": {
+                        "operationMetadataId": "fac98abb-6c42-40c8-a0a9-1776f31b9ac8"
+                    }
+                },
+                {
+                    "type": "Foreach",
+                    "metadata": {
+                        "operationMetadataId": "2c696c84-7f8a-4c5d-a570-6f7a1ad1277f"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "341851b8-b864-4607-b52f-5f3829dedab9"
+                    }
+                },
+                {
+                    "type": "Query",
+                    "metadata": {
+                        "operationMetadataId": "43402f99-5610-4336-bbf0-5b5f3c1b0c12"
+                    }
+                },
+                {
+                    "type": "SetVariable",
+                    "metadata": {
+                        "operationMetadataId": "06dcd01d-1aed-4d4d-8602-8030818af5d2"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "ebe1f1b4-0cc7-4ae3-9205-eaa21d04f2c5"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "5f40ae06-b6f8-47d8-9a23-61aa9203394d"
+                    }
+                },
+                {
+                    "type": "Response",
+                    "kind": "Http",
+                    "metadata": {
+                        "operationMetadataId": "78db279c-6e49-4e6f-b6d9-33f604ba7a49"
+                    }
+                },
+                {
+                    "type": "Response",
+                    "kind": "Http",
+                    "metadata": {
+                        "operationMetadataId": "c6ea7996-c416-40dc-ac12-d676ff8f1036"
+                    }
+                },
+                {
+                    "type": "Switch",
+                    "metadata": {
+                        "operationMetadataId": "5dcd89af-617f-4399-ad0b-5a92e1904dd8"
+                    }
+                },
+                {
+                    "type": "AppendToArrayVariable",
+                    "metadata": {
+                        "operationMetadataId": "a032fc31-854f-4b2e-8f19-0e71a291f242"
+                    }
+                },
+                {
+                    "type": "AppendToArrayVariable",
+                    "metadata": {
+                        "operationMetadataId": "3f33b751-49f9-497e-a47c-1d0331886575"
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "6879e842-34ab-4009-83c3-bedd4e20c3d1"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "PostMessageToConversation",
+                    "apiOperation": {
+                        "name": "PostMessageToConversation",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_teams/apiOperations/PostMessageToConversation",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Post message in a chat or channel",
+                            "description": "Posts a message to a chat or a channel",
+                            "visibility": "important",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "PostMessageToConversation",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/teams/#post-message-in-a-chat-or-channel",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                                "displayName": "Microsoft Teams",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "teams",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "TeamsChat",
+                                "TeamsChannel"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "operationMetadataId": "ebdcddfd-d0a3-4fec-b886-3985ae8f589a"
+                    },
+                    "api": {
+                        "name": "shared_teams",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "Microsoft Teams",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "v1.0.1754\\1.0.1754.4231",
+                                    "current": "v1.0.1757\\1.0.1757.4256"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "Microsoft Teams enables you to get all your content, tools and conversations in the Team workspace with Microsoft 365."
+                        }
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "bbeb4e5f-983c-4fb2-ad77-688ca18f083c"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "PostItem",
+                    "apiOperation": {
+                        "name": "PostItem",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Create item",
+                            "description": "Creates a new item in a SharePoint list.",
+                            "visibility": "important",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "PostItem",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/sharepointonline/#create-item",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                "displayName": "SharePoint",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "sharepointonline",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "SharePointListTableData"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "operationMetadataId": "bbd480b4-34b7-4f9a-8f0c-998873576685"
+                    },
+                    "api": {
+                        "name": "shared_sharepointonline",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "SharePoint",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "releases/v1.0.1746\\1.0.1746.4174",
+                                    "current": "v1.0.1754\\1.0.1754.4231"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "SharePoint helps organizations share and collaborate with colleagues, partners, and customers. You can connect to SharePoint Online or to an on-premises SharePoint 2016 or 2019 farm using the On-Premises Data Gateway to manage documents and list items."
+                        }
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "f0ecfacb-e8fa-4883-9439-dd0d373a048a"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "67f6409e-3a3b-4b81-82b2-2d5b22d0df99"
+                    }
+                },
+                {
+                    "type": "AppendToArrayVariable",
+                    "metadata": {
+                        "operationMetadataId": "f66a94bb-aebe-4578-b3d4-f9aabcfaf803"
+                    }
+                },
+                {
+                    "type": "Http",
+                    "metadata": {
+                        "operationMetadataId": "0b9eaa6f-f266-4f8e-9cfd-4a1de693f60c"
+                    }
+                },
+                {
+                    "type": "Http",
+                    "metadata": {
+                        "operationMetadataId": "b6a720b8-5515-4537-829d-e8ab7f07f42f"
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "7a2b07bf-c625-4f67-8267-d59301c50e53"
+                    }
+                },
+                {
+                    "type": "Http",
+                    "metadata": {
+                        "operationMetadataId": "3372be68-2b93-4cbc-8bb3-0e7bfd20d555"
+                    }
+                },
+                {
+                    "type": "ParseJson",
+                    "metadata": {
+                        "operationMetadataId": "909a9998-c58d-4e1c-aacf-fbda4e247d26"
+                    }
+                },
+                {
+                    "type": "Query",
+                    "metadata": {
+                        "operationMetadataId": "d643ad66-85aa-434e-a68e-af9e513c1894"
+                    }
+                },
+                {
+                    "type": "AppendToArrayVariable",
+                    "metadata": {
+                        "operationMetadataId": "3f33b751-49f9-497e-a47c-1d0331886575"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "PostMessageToConversation",
+                    "apiOperation": {
+                        "name": "PostMessageToConversation",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_teams/apiOperations/PostMessageToConversation",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Post message in a chat or channel",
+                            "description": "Posts a message to a chat or a channel",
+                            "visibility": "important",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "PostMessageToConversation",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/teams/#post-message-in-a-chat-or-channel",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                                "displayName": "Microsoft Teams",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "teams",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "TeamsChat",
+                                "TeamsChannel"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "operationMetadataId": "6b3ac97c-70cd-4025-b54c-7a5064976290"
+                    },
+                    "api": {
+                        "name": "shared_teams",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "Microsoft Teams",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1757/1.0.1757.4256/teams/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "v1.0.1754\\1.0.1754.4231",
+                                    "current": "v1.0.1757\\1.0.1757.4256"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "Microsoft Teams enables you to get all your content, tools and conversations in the Team workspace with Microsoft 365."
+                        }
+                    }
+                },
+                {
+                    "type": "Http",
+                    "metadata": {
+                        "operationMetadataId": "0f76d508-394b-4881-bf67-47bf3a3873b7"
+                    }
+                },
+                {
+                    "type": "Compose",
+                    "metadata": {
+                        "operationMetadataId": "91205059-f7d2-44ab-9da1-5857aad89be9"
+                    }
+                },
+                {
+                    "type": "AppendToArrayVariable",
+                    "metadata": {
+                        "operationMetadataId": "360245b6-a2ea-4808-b165-97bfc36a9777"
+                    }
+                },
+                {
+                    "type": "OpenApiConnection",
+                    "swaggerOperationId": "PostItem",
+                    "apiOperation": {
+                        "name": "PostItem",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem",
+                        "type": "Microsoft.ProcessSimple/apis/apiOperations",
+                        "properties": {
+                            "summary": "Create item",
+                            "description": "Creates a new item in a SharePoint list.",
+                            "visibility": "important",
+                            "pageable": false,
+                            "isChunkingSupported": false,
+                            "isNotification": false,
+                            "annotation": {
+                                "status": "Production",
+                                "family": "PostItem",
+                                "revision": 1
+                            },
+                            "externalDocs": {
+                                "url": "https://docs.microsoft.com/connectors/sharepointonline/#create-item",
+                                "description": "Learn more"
+                            },
+                            "api": {
+                                "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                                "displayName": "SharePoint",
+                                "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                                "brandColor": "",
+                                "tier": "Standard",
+                                "apiName": "sharepointonline",
+                                "isProcessSimpleApiReferenceConversionAlreadyDone": false
+                            },
+                            "operationType": "OpenApiConnection",
+                            "swaggerTags": [
+                                "SharePointListTableData"
+                            ]
+                        }
+                    },
+                    "metadata": {
+                        "operationMetadataId": "07e6b7b0-38ec-471b-8067-856816ebb208"
+                    },
+                    "api": {
+                        "name": "shared_sharepointonline",
+                        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "type": "/providers/Microsoft.PowerApps/apis",
+                        "properties": {
+                            "displayName": "SharePoint",
+                            "iconUri": "https://conn-afd-prod-endpoint-bmc9bqahasf3grgk.b01.azurefd.net/v1.0.1754/1.0.1754.4231/sharepointonline/icon.png",
+                            "metadata": {
+                                "source": "marketplace",
+                                "brandColor": "",
+                                "useNewApimVersion": "true",
+                                "version": {
+                                    "previous": "releases/v1.0.1746\\1.0.1746.4174",
+                                    "current": "v1.0.1754\\1.0.1754.4231"
+                                }
+                            },
+                            "tier": "Standard",
+                            "isCustomApi": false,
+                            "description": "SharePoint helps organizations share and collaborate with colleagues, partners, and customers. You can connect to SharePoint Online or to an on-premises SharePoint 2016 or 2019 farm using the On-Premises Data Gateway to manage documents and list items."
+                        }
+                    }
+                }
+            ],
+            "description": "API que recebe um email de um cliente e todo o conhecimento e APIs necessárias para poder compôr um email de resposta."
+        },
+        "creator": {
+            "tenantId": "35bc953e-5dc5-4cad-821b-a0cc4f4d39d9",
+            "objectId": "9b003b19-0c3a-4cd7-a4ae-9aa636d977e5",
+            "userId": "9b003b19-0c3a-4cd7-a4ae-9aa636d977e5",
+            "userType": "ActiveDirectory"
+        },
+        "installationStatus": "NotApplicable",
+        "provisioningMethod": "FromDefinition",
+        "flowFailureAlertSubscribed": true,
+        "workflowEntityId": "7412bfac-b63f-f011-877a-7c1e528837b9",
+        "referencedResources": [
+            {
+                "service": "sharepoint",
+                "resource": {
+                    "site": "https://goldenergypt.sharepoint.com/sites/NewEnergy"
+                },
+                "referencers": [
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContentByPath"
+                    },
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContent"
+                    },
+                    {
+                        "referenceSourceType": "Triggers",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContentByPath"
+                    },
+                    {
+                        "referenceSourceType": "Triggers",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContent"
+                    },
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContentByPath"
+                    },
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    },
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    }
+                ]
+            },
+            {
+                "service": "sharepoint",
+                "resource": {
+                    "site": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                    "list": "ecdbef88-d8ed-466e-ae2f-973431f58f4f"
+                },
+                "referencers": [
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    },
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    },
+                    {
+                        "referenceSourceType": "Triggers",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    },
+                    {
+                        "referenceSourceType": "Triggers",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/PostItem"
+                    }
+                ]
+            },
+            {
+                "service": "sharepoint",
+                "resource": {
+                    "site": "https://goldenergypt.sharepoint.com/sites/NewEnergy",
+                    "fileId": "%252fDocumentos%2bPartilhados%252f0.%2bGeral%252f30.%2bKnowledge%2bBase%252fDefaultPersona.txt"
+                },
+                "referencers": [
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/apiOperations/GetFileContent"
+                    }
+                ]
+            },
+            {
+                "service": "teams",
+                "resource": {
+                    "chatId": "19:39df9a214acb47dab3060d2a405c241d@thread.v2"
+                },
+                "referencers": [
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_teams/apiOperations/PostMessageToConversation"
+                    }
+                ]
+            },
+            {
+                "service": "teams",
+                "resource": {
+                    "chatId": "andre.silva@goldenergy.pt;"
+                },
+                "referencers": [
+                    {
+                        "referenceSourceType": "Actions",
+                        "operationId": "/providers/Microsoft.PowerApps/apis/shared_teams/apiOperations/PostMessageToConversation"
+                    }
+                ]
+            }
+        ],
+        "isManaged": false,
+        "machineDescriptionData": {}
+    }
+}
