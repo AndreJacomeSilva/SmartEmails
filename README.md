@@ -259,14 +259,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **📧 Email**: support@goldenergy.pt
+- **📧 Email**: amdre.silva@goldenergy.pt
 - **🐛 Issues**: [GitHub Issues](https://github.com/AndreJacomeSilva/SmartEmails/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/AndreJacomeSilva/SmartEmails/discussions)
 - **📚 Documentation**: [docs/README.md](docs/README.md)
-
-## 🏷️ Latest Release
-
-Check out the [latest release](https://github.com/AndreJacomeSilva/SmartEmails/releases/latest) for the most recent updates and improvements.
 
 ---
 
